@@ -1,0 +1,247 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "networks": {
+      "type": "object",
+      "properties": {
+        "mainnet": {
+          "type": "object",
+          "properties": {
+            "factoryAddress": {
+              "type": "string",
+              "description": "DeDust factory contract address",
+              "pattern": "^(EQ|UQ)[A-Za-z0-9_-]{46}$|^[A-Za-z0-9_-]{48}$"
+            },
+            "tonClientEndpoint": {
+              "type": "string",
+              "description": "TON client endpoint",
+              "format": "uri"
+            },
+            "explorerUrl": {
+              "type": "string",
+              "description": "Blockchain explorer URL",
+              "format": "uri"
+            },
+            "chainId": {
+              "type": "integer",
+              "description": "Chain ID",
+              "enum": [101]
+            }
+          },
+          "required": ["factoryAddress", "tonClientEndpoint", "explorerUrl", "chainId"],
+          "additionalProperties": false
+        },
+        "testnet": {
+          "type": "object",
+          "properties": {
+            "factoryAddress": {
+              "type": "string",
+              "description": "DeDust factory contract address",
+              "pattern": "^(EQ|UQ)[A-Za-z0-9_-]{46}$|^[A-Za-z0-9_-]{48}$"
+            },
+            "tonClientEndpoint": {
+              "type": "string",
+              "description": "TON client endpoint",
+              "format": "uri"
+            },
+            "explorerUrl": {
+              "type": "string",
+              "description": "Blockchain explorer URL",
+              "format": "uri"
+            },
+            "chainId": {
+              "type": "integer",
+              "description": "Chain ID",
+              "enum": [102]
+            }
+          },
+          "required": ["factoryAddress", "tonClientEndpoint", "explorerUrl", "chainId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["mainnet", "testnet"],
+      "additionalProperties": false
+    },
+    "router": {
+      "type": "object",
+      "properties": {
+        "maxHops": {
+          "type": "integer",
+          "description": "Maximum number of hops in a route",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "slippageTolerance": {
+          "type": "number",
+          "description": "Default slippage tolerance percentage",
+          "minimum": 0,
+          "maximum": 50
+        },
+        "quoteTTL": {
+          "type": "integer",
+          "description": "Quote time-to-live in seconds",
+          "minimum": 10,
+          "maximum": 300
+        },
+        "gasEstimate": {
+          "type": "string",
+          "description": "Default gas estimate",
+          "pattern": "^[0-9]+(\\.[0-9]+)?$"
+        },
+        "cacheConfig": {
+          "type": "object",
+          "properties": {
+            "ttl": {
+              "type": "integer",
+              "description": "Cache TTL in milliseconds",
+              "minimum": 1000,
+              "maximum": 300000
+            },
+            "maxSize": {
+              "type": "integer",
+              "description": "Maximum cached items",
+              "minimum": 10,
+              "maximum": 10000
+            }
+          },
+          "required": ["ttl", "maxSize"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["maxHops", "slippageTolerance", "quoteTTL", "gasEstimate", "cacheConfig"],
+      "additionalProperties": false
+    },
+    "amm": {
+      "type": "object",
+      "properties": {
+        "gasLimit": {
+          "type": "string",
+          "description": "Default gas limit",
+          "pattern": "^[0-9]+$"
+        },
+        "priorityFee": {
+          "type": "string",
+          "description": "Default priority fee",
+          "pattern": "^[0-9]+(\\.[0-9]+)?$"
+        },
+        "confirmationTimeout": {
+          "type": "integer",
+          "description": "Transaction confirmation timeout in milliseconds",
+          "minimum": 5000,
+          "maximum": 120000
+        },
+        "maxRetries": {
+          "type": "integer",
+          "description": "Maximum retry attempts",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "cacheConfig": {
+          "type": "object",
+          "properties": {
+            "ttl": {
+              "type": "integer",
+              "description": "Cache TTL in milliseconds",
+              "minimum": 1000,
+              "maximum": 300000
+            },
+            "maxSize": {
+              "type": "integer",
+              "description": "Maximum cached items",
+              "minimum": 10,
+              "maximum": 10000
+            }
+          },
+          "required": ["ttl", "maxSize"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["gasLimit", "priorityFee", "confirmationTimeout", "maxRetries", "cacheConfig"],
+      "additionalProperties": false
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "minTonAmount": {
+          "type": "string",
+          "description": "Minimum TON amount",
+          "pattern": "^[0-9]+(\\.[0-9]+)?$"
+        },
+        "maxTonAmount": {
+          "type": "string",
+          "description": "Maximum TON amount",
+          "pattern": "^[0-9]+(\\.[0-9]+)?$"
+        },
+        "minSlippage": {
+          "type": "number",
+          "description": "Minimum slippage percentage",
+          "minimum": 0
+        },
+        "maxSlippage": {
+          "type": "number",
+          "description": "Maximum slippage percentage",
+          "maximum": 50
+        },
+        "minGas": {
+          "type": "string",
+          "description": "Minimum gas amount",
+          "pattern": "^[0-9]+(\\.[0-9]+)?$"
+        },
+        "maxGas": {
+          "type": "string",
+          "description": "Maximum gas amount",
+          "pattern": "^[0-9]+(\\.[0-9]+)?$"
+        }
+      },
+      "required": ["minTonAmount", "maxTonAmount", "minSlippage", "maxSlippage", "minGas", "maxGas"],
+      "additionalProperties": false
+    },
+    "api": {
+      "type": "object",
+      "properties": {
+        "requestTimeout": {
+          "type": "integer",
+          "description": "Request timeout in milliseconds",
+          "minimum": 1000,
+          "maximum": 60000
+        },
+        "retryAttempts": {
+          "type": "integer",
+          "description": "Number of retry attempts",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "retryDelay": {
+          "type": "integer",
+          "description": "Delay between retries in milliseconds",
+          "minimum": 100,
+          "maximum": 10000
+        },
+        "rateLimit": {
+          "type": "object",
+          "properties": {
+            "requestsPerMinute": {
+              "type": "integer",
+              "description": "Rate limit per minute",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "burstLimit": {
+              "type": "integer",
+              "description": "Burst request limit",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": ["requestsPerMinute", "burstLimit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["requestTimeout", "retryAttempts", "retryDelay", "rateLimit"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["networks", "router", "amm", "limits", "api"],
+  "additionalProperties": false
+}

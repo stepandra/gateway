@@ -1,0 +1,132 @@
+# DeDust Connector Configuration
+# DeDust is a DEX on TON blockchain with Router and AMM functionality
+
+# Network configuration
+networks:
+  mainnet:
+    factoryAddress: 'EQBfAN7LfaUYgXZNw5Wc7GBgkEX2yhuJ5ka95J1JJwXXf4a8'
+    tonClientEndpoint: 'https://toncenter.com/api/v2/jsonRPC'
+    explorerUrl: 'https://tonapi.io'
+    chainId: 101
+  testnet:
+    factoryAddress: 'EQDHcPEKqCUJHkVY8o2YTGrX5aMLOJ3FD8BRoaYOX6t0F0Xs'
+    tonClientEndpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC'
+    explorerUrl: 'https://testnet.tonapi.io'
+    chainId: 102
+
+# Router configuration for swap aggregation
+router:
+  maxHops: 3                    # Maximum number of hops in a route
+  slippageTolerance: 1.0        # Default slippage tolerance (%)
+  quoteTTL: 60                  # Quote time-to-live (seconds)
+  gasEstimate: '0.1'           # Default gas estimate (TON)
+  cacheConfig:
+    ttl: 30000                  # Cache TTL (milliseconds)
+    maxSize: 500                # Maximum cached quotes
+
+# AMM configuration for liquidity operations
+amm:
+  gasLimit: '100000'           # Default gas limit
+  priorityFee: '0.01'          # Default priority fee (TON)
+  confirmationTimeout: 30000    # Transaction confirmation timeout (ms)
+  maxRetries: 3                # Maximum retry attempts
+  cacheConfig:
+    ttl: 30000                  # Cache TTL (milliseconds)
+    maxSize: 200                # Maximum cached pool info
+
+# Pool configurations
+pools:
+  types:
+    volatile:
+      fee: 0.3                  # 0.3% fee for volatile pools
+      description: 'Standard AMM pools with 0.3% fee'
+    stable:
+      fee: 0.05                 # 0.05% fee for stable pools
+      description: 'Stable pools optimized for like-kind assets'
+
+# Transaction limits
+limits:
+  minTonAmount: '0.01'         # Minimum TON amount
+  maxTonAmount: '1000000'      # Maximum TON amount
+  minSlippage: 0               # Minimum slippage (%)
+  maxSlippage: 50              # Maximum slippage (%)
+  minGas: '0.001'             # Minimum gas amount
+  maxGas: '1.0'               # Maximum gas amount
+
+# API configuration
+api:
+  requestTimeout: 30000         # Request timeout (milliseconds)
+  retryAttempts: 3             # Number of retry attempts
+  retryDelay: 1000             # Delay between retries (milliseconds)
+  rateLimit:
+    requestsPerMinute: 100      # Rate limit per minute
+    burstLimit: 10              # Burst request limit
+
+# Price impact thresholds for warnings
+priceImpact:
+  low: 1.0                     # 1% - Low impact
+  medium: 3.0                  # 3% - Medium impact
+  high: 5.0                    # 5% - High impact
+  veryHigh: 10.0              # 10% - Very high impact
+
+# Common tokens on each network
+tokens:
+  mainnet:
+    TON:
+      symbol: 'TON'
+      name: 'Toncoin'
+      address: 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c'
+      decimals: 9
+      isNative: true
+    USDT:
+      symbol: 'USDT'
+      name: 'Tether USD'
+      address: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs'
+      decimals: 6
+      isNative: false
+    USDC:
+      symbol: 'USDC'
+      name: 'USD Coin'
+      address: 'EQB-MPwrd1G6WKNkLz_VnV6WqBDd142KMQv-g1O-8QUA3728'
+      decimals: 6
+      isNative: false
+  testnet:
+    TON:
+      symbol: 'TON'
+      name: 'Toncoin'
+      address: 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c'
+      decimals: 9
+      isNative: true
+    USDT:
+      symbol: 'USDT'
+      name: 'Tether USD (Testnet)'
+      address: 'EQC61Y3prYwR2GDuPH5kH_QFqFmNEUGQxxnKzI4W8mpLgfFy'
+      decimals: 6
+      isNative: false
+
+# Error handling configuration
+errors:
+  retryableErrors:
+    - 'NETWORK_ERROR'
+    - 'TIMEOUT'
+    - 'RATE_LIMIT_EXCEEDED'
+  fatalErrors:
+    - 'INVALID_TOKEN'
+    - 'INVALID_ADDRESS'
+    - 'INSUFFICIENT_BALANCE'
+
+# Logging configuration
+logging:
+  level: 'info'                # Log level: debug, info, warn, error
+  enableMetrics: true          # Enable performance metrics
+  sensitiveFields:             # Fields to mask in logs
+    - 'privateKey'
+    - 'mnemonic'
+    - 'seed'
+
+# Feature flags
+features:
+  enableQuoteCache: true       # Enable quote caching
+  enablePoolCache: true        # Enable pool info caching
+  enableMetrics: true          # Enable performance metrics
+  enableHealthCheck: true      # Enable health check endpoint

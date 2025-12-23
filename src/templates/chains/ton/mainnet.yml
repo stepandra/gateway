@@ -1,0 +1,10 @@
+nodeURL: https://toncenter.com/api/v2
+drpcURL: https://ton.drpc.org/rest
+nativeCurrencySymbol: TON
+defaultComputeUnits: 200000
+confirmRetryInterval: 0.5
+confirmRetryCount: 10
+basePriorityFeePct: 90
+minPriorityFeePerCU: 0.1
+maxFee: 0.01
+priorityFee: 0.00001

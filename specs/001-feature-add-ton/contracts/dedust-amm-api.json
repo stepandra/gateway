@@ -1,0 +1,691 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "DeDust AMM API",
+    "description": "DeDust AMM operations for liquidity provision on TON",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/connectors/dedust/amm/pool-info": {
+      "get": {
+        "summary": "Get pool information",
+        "description": "Returns pool details including reserves, fees, and trading pair info",
+        "parameters": [
+          {
+            "name": "network",
+            "in": "query",
+            "description": "Network identifier",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["mainnet", "testnet"],
+              "default": "mainnet"
+            }
+          },
+          {
+            "name": "baseToken",
+            "in": "query",
+            "description": "Base token symbol or address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "quoteToken",
+            "in": "query",
+            "description": "Quote token symbol or address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "poolType",
+            "in": "query",
+            "description": "Pool type preference",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["volatile", "stable"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pool information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoolInfoResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pool not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connectors/dedust/amm/quote-liquidity": {
+      "post": {
+        "summary": "Quote liquidity provision",
+        "description": "Calculate liquidity provision amounts and LP tokens to receive",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteLiquidityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Liquidity provision quote",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteLiquidityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid liquidity parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connectors/dedust/amm/add-liquidity": {
+      "post": {
+        "summary": "Add liquidity to pool",
+        "description": "Deposit tokens to liquidity pool and receive LP tokens",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddLiquidityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Liquidity added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddLiquidityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Liquidity addition failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connectors/dedust/amm/remove-liquidity": {
+      "post": {
+        "summary": "Remove liquidity from pool",
+        "description": "Burn LP tokens and withdraw underlying assets",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveLiquidityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Liquidity removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoveLiquidityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Liquidity removal failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connectors/dedust/amm/position-info": {
+      "get": {
+        "summary": "Get liquidity position information",
+        "description": "Returns user's liquidity position details and claimable fees",
+        "parameters": [
+          {
+            "name": "network",
+            "in": "query",
+            "description": "Network identifier",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["mainnet", "testnet"],
+              "default": "mainnet"
+            }
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "description": "Wallet address to query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "baseToken",
+            "in": "query",
+            "description": "Base token symbol or address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "quoteToken",
+            "in": "query",
+            "description": "Quote token symbol or address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Position information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionInfoResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Position not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connectors/dedust/amm/collect-fees": {
+      "post": {
+        "summary": "Collect accumulated fees",
+        "description": "Claim trading fees earned from liquidity provision",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectFeesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fees collected successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectFeesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fee collection failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PoolInfoResponse": {
+        "type": "object",
+        "required": ["address", "baseToken", "quoteToken", "reserves", "fee", "totalSupply", "poolType"],
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Pool contract address"
+          },
+          "baseToken": {
+            "$ref": "#/components/schemas/TokenInfo"
+          },
+          "quoteToken": {
+            "$ref": "#/components/schemas/TokenInfo"
+          },
+          "reserves": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "[baseReserve, quoteReserve]"
+          },
+          "fee": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "Pool fee percentage"
+          },
+          "totalSupply": {
+            "type": "string",
+            "description": "Total LP token supply"
+          },
+          "poolType": {
+            "type": "string",
+            "enum": ["volatile", "stable"]
+          },
+          "price": {
+            "type": "string",
+            "description": "Current pool price (quote/base)"
+          }
+        }
+      },
+      "TokenInfo": {
+        "type": "object",
+        "required": ["symbol", "address", "decimals", "name"],
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "decimals": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 18
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "QuoteLiquidityRequest": {
+        "type": "object",
+        "required": ["baseToken", "quoteToken", "amount", "amountType"],
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          },
+          "baseToken": {
+            "type": "string",
+            "description": "Base token symbol or address"
+          },
+          "quoteToken": {
+            "type": "string",
+            "description": "Quote token symbol or address"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]+)?$",
+            "description": "Amount of specified token"
+          },
+          "amountType": {
+            "type": "string",
+            "enum": ["base", "quote"],
+            "description": "Which token the amount refers to"
+          },
+          "poolType": {
+            "type": "string",
+            "enum": ["volatile", "stable"],
+            "description": "Pool type preference"
+          }
+        }
+      },
+      "QuoteLiquidityResponse": {
+        "type": "object",
+        "required": ["baseAmount", "quoteAmount", "lpTokens", "sharePercent", "gasEstimate"],
+        "properties": {
+          "baseAmount": {
+            "type": "string",
+            "description": "Base token amount to deposit"
+          },
+          "quoteAmount": {
+            "type": "string",
+            "description": "Quote token amount to deposit"
+          },
+          "lpTokens": {
+            "type": "string",
+            "description": "LP tokens to receive"
+          },
+          "sharePercent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Pool share percentage"
+          },
+          "gasEstimate": {
+            "type": "string",
+            "description": "Estimated gas cost"
+          },
+          "priceImpact": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Price impact of liquidity addition"
+          }
+        }
+      },
+      "AddLiquidityRequest": {
+        "type": "object",
+        "required": ["address", "baseToken", "quoteToken", "baseAmount", "quoteAmount"],
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          },
+          "address": {
+            "type": "string",
+            "description": "Wallet address providing liquidity"
+          },
+          "baseToken": {
+            "type": "string",
+            "description": "Base token symbol or address"
+          },
+          "quoteToken": {
+            "type": "string",
+            "description": "Quote token symbol or address"
+          },
+          "baseAmount": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]+)?$",
+            "description": "Base token amount to deposit"
+          },
+          "quoteAmount": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]+)?$",
+            "description": "Quote token amount to deposit"
+          },
+          "slippage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 50,
+            "default": 0.5,
+            "description": "Slippage tolerance percentage"
+          },
+          "gasPrice": {
+            "type": "string",
+            "description": "Gas price override"
+          }
+        }
+      },
+      "AddLiquidityResponse": {
+        "type": "object",
+        "required": ["txHash", "baseAmount", "quoteAmount", "lpTokens", "gasUsed"],
+        "properties": {
+          "txHash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "baseAmount": {
+            "type": "string",
+            "description": "Actual base token deposited"
+          },
+          "quoteAmount": {
+            "type": "string",
+            "description": "Actual quote token deposited"
+          },
+          "lpTokens": {
+            "type": "string",
+            "description": "LP tokens received"
+          },
+          "gasUsed": {
+            "type": "string",
+            "description": "Gas used for transaction"
+          },
+          "sharePercent": {
+            "type": "number",
+            "description": "Pool share percentage"
+          }
+        }
+      },
+      "RemoveLiquidityRequest": {
+        "type": "object",
+        "required": ["address", "baseToken", "quoteToken", "lpTokens"],
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          },
+          "address": {
+            "type": "string",
+            "description": "Wallet address removing liquidity"
+          },
+          "baseToken": {
+            "type": "string",
+            "description": "Base token symbol or address"
+          },
+          "quoteToken": {
+            "type": "string",
+            "description": "Quote token symbol or address"
+          },
+          "lpTokens": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]+)?$",
+            "description": "LP tokens to burn"
+          },
+          "slippage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 50,
+            "default": 0.5,
+            "description": "Slippage tolerance percentage"
+          },
+          "gasPrice": {
+            "type": "string",
+            "description": "Gas price override"
+          }
+        }
+      },
+      "RemoveLiquidityResponse": {
+        "type": "object",
+        "required": ["txHash", "baseReceived", "quoteReceived", "lpTokensBurned", "gasUsed"],
+        "properties": {
+          "txHash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "baseReceived": {
+            "type": "string",
+            "description": "Base tokens withdrawn"
+          },
+          "quoteReceived": {
+            "type": "string",
+            "description": "Quote tokens withdrawn"
+          },
+          "lpTokensBurned": {
+            "type": "string",
+            "description": "LP tokens burned"
+          },
+          "gasUsed": {
+            "type": "string",
+            "description": "Gas used for transaction"
+          }
+        }
+      },
+      "PositionInfoResponse": {
+        "type": "object",
+        "required": ["poolAddress", "lpTokens", "sharePercent", "claimableFees"],
+        "properties": {
+          "poolAddress": {
+            "type": "string",
+            "description": "Pool contract address"
+          },
+          "lpTokens": {
+            "type": "string",
+            "description": "LP tokens owned"
+          },
+          "sharePercent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Pool share percentage"
+          },
+          "baseAmount": {
+            "type": "string",
+            "description": "Equivalent base token amount"
+          },
+          "quoteAmount": {
+            "type": "string",
+            "description": "Equivalent quote token amount"
+          },
+          "claimableFees": {
+            "$ref": "#/components/schemas/ClaimableFees"
+          },
+          "createdAt": {
+            "type": "integer",
+            "description": "Position creation timestamp"
+          },
+          "lastUpdated": {
+            "type": "integer",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "ClaimableFees": {
+        "type": "object",
+        "required": ["baseToken", "quoteToken"],
+        "properties": {
+          "baseToken": {
+            "type": "string",
+            "description": "Claimable base token fees"
+          },
+          "quoteToken": {
+            "type": "string",
+            "description": "Claimable quote token fees"
+          },
+          "lastCollected": {
+            "type": "integer",
+            "description": "Last fee collection timestamp"
+          }
+        }
+      },
+      "CollectFeesRequest": {
+        "type": "object",
+        "required": ["address", "baseToken", "quoteToken"],
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          },
+          "address": {
+            "type": "string",
+            "description": "Wallet address collecting fees"
+          },
+          "baseToken": {
+            "type": "string",
+            "description": "Base token symbol or address"
+          },
+          "quoteToken": {
+            "type": "string",
+            "description": "Quote token symbol or address"
+          },
+          "gasPrice": {
+            "type": "string",
+            "description": "Gas price override"
+          }
+        }
+      },
+      "CollectFeesResponse": {
+        "type": "object",
+        "required": ["txHash", "baseFeesCollected", "quoteFeesCollected", "gasUsed"],
+        "properties": {
+          "txHash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "baseFeesCollected": {
+            "type": "string",
+            "description": "Base token fees collected"
+          },
+          "quoteFeesCollected": {
+            "type": "string",
+            "description": "Quote token fees collected"
+          },
+          "gasUsed": {
+            "type": "string",
+            "description": "Gas used for transaction"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["statusCode", "error", "message"],
+        "properties": {
+          "statusCode": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

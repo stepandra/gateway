@@ -15,8 +15,10 @@ import Fastify, { FastifyInstance } from 'fastify';
 // Routes
 import { ethereumRoutes } from './chains/ethereum/ethereum.routes';
 import { solanaRoutes } from './chains/solana/solana.routes';
+import { tonRoutes } from './chains/ton/ton.routes';
 import { configRoutes } from './config/config.routes';
 import { register0xRoutes } from './connectors/0x/0x.routes';
+import { dedustRoutes } from './connectors/dedust/dedust.routes';
 import { jupiterRoutes } from './connectors/jupiter/jupiter.routes';
 import { meteoraRoutes } from './connectors/meteora/meteora.routes';
 import { raydiumRoutes } from './connectors/raydium/raydium.routes';
@@ -70,6 +72,10 @@ const swaggerOptions = {
         name: '/chain/ethereum',
         description: 'Ethereum and EVM-based chain endpoints',
       },
+      {
+        name: '/chain/ton',
+        description: 'TON blockchain endpoints',
+      },
 
       // Connectors
       {
@@ -89,6 +95,10 @@ const swaggerOptions = {
         description: 'Uniswap connector endpoints',
       },
       { name: '/connector/0x', description: '0x connector endpoints' },
+      {
+        name: '/connector/dedust',
+        description: 'DeDust connector endpoints',
+      },
     ],
     components: {
       parameters: {
@@ -215,6 +225,7 @@ const configureGatewayServer = () => {
     // Register chain routes
     app.register(solanaRoutes, { prefix: '/chains/solana' });
     app.register(ethereumRoutes, { prefix: '/chains/ethereum' });
+    app.register(tonRoutes, { prefix: '/chains/ton' });
 
     // Register DEX connector routes - organized by connector
 
@@ -239,6 +250,12 @@ const configureGatewayServer = () => {
 
     // 0x routes
     app.register(register0xRoutes);
+
+    // DeDust routes
+    app.register(dedustRoutes.router, {
+      prefix: '/connectors/dedust/router',
+    });
+    app.register(dedustRoutes.amm, { prefix: '/connectors/dedust/amm' });
   };
 
   // Register routes on main server

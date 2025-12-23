@@ -1,0 +1,373 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "DeDust Router API",
+    "description": "DeDust Router v2 operations for multi-hop swaps on TON",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/connectors/dedust/router/quote-swap": {
+      "post": {
+        "summary": "Get swap quote with routing",
+        "description": "Returns optimal route and pricing for token swap through DeDust pools",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteSwapRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Swap quote with routing information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteSwapResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No route found or insufficient liquidity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connectors/dedust/router/execute-swap": {
+      "post": {
+        "summary": "Execute swap directly",
+        "description": "Execute token swap using provided parameters without pre-generated quote",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteSwapRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Swap transaction submitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteSwapResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Swap execution failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connectors/dedust/router/execute-quote": {
+      "post": {
+        "summary": "Execute pre-generated quote",
+        "description": "Execute swap using previously generated quote (if not expired)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteQuoteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Quote executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteSwapResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Quote expired or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "QuoteSwapRequest": {
+        "type": "object",
+        "required": ["baseToken", "quoteToken", "amount", "side"],
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          },
+          "baseToken": {
+            "type": "string",
+            "description": "Base token symbol or address"
+          },
+          "quoteToken": {
+            "type": "string",
+            "description": "Quote token symbol or address"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]+)?$",
+            "description": "Amount to swap"
+          },
+          "side": {
+            "type": "string",
+            "enum": ["BUY", "SELL"]
+          },
+          "slippage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 50,
+            "default": 0.5,
+            "description": "Slippage tolerance percentage"
+          },
+          "excludeDEXs": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "DEXs to exclude from routing"
+          }
+        }
+      },
+      "QuoteSwapResponse": {
+        "type": "object",
+        "required": ["route", "amountIn", "amountOut", "amountOutMin", "priceImpact", "gasEstimate", "ttl"],
+        "properties": {
+          "route": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RouteStep"
+            }
+          },
+          "amountIn": {
+            "type": "string",
+            "description": "Input amount"
+          },
+          "amountOut": {
+            "type": "string",
+            "description": "Expected output amount"
+          },
+          "amountOutMin": {
+            "type": "string",
+            "description": "Minimum output after slippage"
+          },
+          "priceImpact": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Price impact percentage"
+          },
+          "gasEstimate": {
+            "type": "string",
+            "description": "Estimated gas cost"
+          },
+          "ttl": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Quote expiration timestamp"
+          },
+          "slippage": {
+            "type": "number",
+            "description": "Applied slippage percentage"
+          },
+          "quoteId": {
+            "type": "string",
+            "description": "Unique quote identifier for execute-quote"
+          }
+        }
+      },
+      "RouteStep": {
+        "type": "object",
+        "required": ["pool", "tokenIn", "tokenOut", "amountIn", "amountOut", "poolType"],
+        "properties": {
+          "pool": {
+            "type": "string",
+            "description": "Pool address for this step"
+          },
+          "tokenIn": {
+            "type": "string",
+            "description": "Input token address"
+          },
+          "tokenOut": {
+            "type": "string",
+            "description": "Output token address"
+          },
+          "amountIn": {
+            "type": "string",
+            "description": "Input amount for this step"
+          },
+          "amountOut": {
+            "type": "string",
+            "description": "Output amount for this step"
+          },
+          "poolType": {
+            "type": "string",
+            "enum": ["volatile", "stable"],
+            "description": "DeDust pool type"
+          },
+          "fee": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Pool fee percentage"
+          }
+        }
+      },
+      "ExecuteSwapRequest": {
+        "type": "object",
+        "required": ["baseToken", "quoteToken", "amount", "side", "address"],
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          },
+          "baseToken": {
+            "type": "string",
+            "description": "Base token symbol or address"
+          },
+          "quoteToken": {
+            "type": "string",
+            "description": "Quote token symbol or address"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^[0-9]+(\\.[0-9]+)?$",
+            "description": "Amount to swap"
+          },
+          "side": {
+            "type": "string",
+            "enum": ["BUY", "SELL"]
+          },
+          "address": {
+            "type": "string",
+            "description": "Wallet address executing swap"
+          },
+          "slippage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 50,
+            "default": 0.5,
+            "description": "Slippage tolerance percentage"
+          },
+          "gasPrice": {
+            "type": "string",
+            "description": "Gas price override"
+          },
+          "gasLimit": {
+            "type": "string",
+            "description": "Gas limit override"
+          }
+        }
+      },
+      "ExecuteQuoteRequest": {
+        "type": "object",
+        "required": ["quoteId", "address"],
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          },
+          "quoteId": {
+            "type": "string",
+            "description": "Quote ID from previous quote-swap call"
+          },
+          "address": {
+            "type": "string",
+            "description": "Wallet address executing swap"
+          },
+          "gasPrice": {
+            "type": "string",
+            "description": "Gas price override"
+          },
+          "gasLimit": {
+            "type": "string",
+            "description": "Gas limit override"
+          }
+        }
+      },
+      "ExecuteSwapResponse": {
+        "type": "object",
+        "required": ["txHash", "amountIn", "amountOut", "gasUsed"],
+        "properties": {
+          "txHash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "amountIn": {
+            "type": "string",
+            "description": "Actual input amount"
+          },
+          "amountOut": {
+            "type": "string",
+            "description": "Expected output amount"
+          },
+          "gasUsed": {
+            "type": "string",
+            "description": "Gas used for transaction"
+          },
+          "route": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RouteStep"
+            },
+            "description": "Route used for swap"
+          },
+          "priceImpact": {
+            "type": "number",
+            "description": "Actual price impact"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["statusCode", "error", "message"],
+        "properties": {
+          "statusCode": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

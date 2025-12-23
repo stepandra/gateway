@@ -16,6 +16,30 @@ This file provides guidance to AI coding assistants when working with code in th
 - Setup with defaults: `pnpm run setup:with-defaults` (updates all configs automatically)
 - Clean install: `pnpm clean` (removes node_modules, coverage, logs, dist)
 
+## TON + DeDust Integration Context
+
+### New Technology Stack
+- **TON Blockchain**: TypeScript with @ton/core, @ton/ton, @ton/crypto, @dedust/sdk, pnpm
+- **Storage**: File-based configuration (YAML/JSON), in-memory caching, no persistent database
+- **Testing**: Jest with coverage e75%, GATEWAY_TEST_MODE=dev, mock TON Center API/DRPC/DeDust SDK
+- **Target Platform**: Linux/macOS server, Docker containers, HTTP/HTTPS REST API
+- **Performance Goals**: quote-swap p95 d800ms, pool-info p95 d500ms, 100 req/min global rate limit
+
+### Recent Feature: TON Chain + DeDust Connectors (001-feature-add-ton)
+- **Purpose**: Add TON blockchain integration and DeDust DEX connectors (Router v2 and AMM) to Gateway v2.8.0
+- **Key Components**: TON chain support, DeDust Router for multi-hop swaps, DeDust AMM for liquidity provision
+- **API Routes**: /chains/ton/*, /connectors/dedust/router/*, /connectors/dedust/amm/*
+- **Configuration**: TON mainnet/testnet support, DeDust pool management, schema compatibility
+- **Testing**: TON/DeDust only (exclude Ethereum/Solana), comprehensive mocking strategy
+
+### Important: Test Execution Constraints
+- **CRITICAL**: Run tests ONLY for TON blockchain and DeDust connectors
+- **FORBIDDEN**: Running tests for Ethereum, Solana, or any other blockchain/DEX in CI
+- **Commands**:
+  - `GATEWAY_TEST_MODE=dev jest --runInBand test/chains/ton.test.ts`
+  - `GATEWAY_TEST_MODE=dev jest --runInBand test/connectors/dedust/`
+- **Coverage**: e75% for TON/DeDust modules only
+
 ## Architecture Overview
 
 ### Gateway Pattern
@@ -26,33 +50,29 @@ This file provides guidance to AI coding assistants when working with code in th
 - Global rate limiting implemented (100 requests/minute) to prevent DoS attacks
 
 ### Module Organization
-- **Chains**: Blockchain implementations (Ethereum, Solana)
-  - Each chain implements standard methods: balances, tokens, status, allowances
+- **Chains**: Blockchain implementations (Ethereum, Solana, **TON**)
+  - Each chain implements standard methods: balances, tokens, status, allowances (TON: balances, tokens, status)
   - Singleton pattern with network-specific instances via `getInstance()`
-  
-- **Connectors**: DEX protocol implementations (Jupiter, Meteora, Raydium, Uniswap, 0x)
+  - **TON-specific**: Uses TON Center API and DRPC as fallback for blockchain interactions
+
+- **Connectors**: DEX protocol implementations (Jupiter, Meteora, Raydium, Uniswap, 0x, **DeDust**)
   - Support for three trading types:
-    - **Router**: DEX aggregators that find optimal swap routes (Jupiter, 0x, Uniswap V3 SOR)
-    - **AMM** (Automated Market Maker): V2-style constant product pools (Raydium, Uniswap V2)
+    - **Router**: DEX aggregators that find optimal swap routes (Jupiter, 0x, Uniswap V3 SOR, **DeDust Router v2**)
+    - **AMM** (Automated Market Maker): V2-style constant product pools (Raydium, Uniswap V2, **DeDust AMM**)
     - **CLMM** (Concentrated Liquidity Market Maker): V3-style concentrated liquidity (Meteora DLMM, Raydium, Uniswap V3)
   - Each connector organized into operation-specific route files by type
   - Standardized request/response schemas across all connectors
+  - **DeDust-specific**: Native TON DEX with multi-hop trades, volatile/stable pools, and security focus
 
 ### API Route Structure
 - Chain routes: `/chains/{chain}/{operation}`
-  - Examples: `/chains/ethereum/balances`, `/chains/solana/tokens`
+  - Examples: `/chains/ethereum/balances`, `/chains/solana/tokens`, **`/chains/ton/balances`, `/chains/ton/tokens`**
 - Connector routes: `/connectors/{dex}/{type}/{operation}`
-  - Router: `/connectors/jupiter/router/quote`, `/connectors/0x/router/swap`
-  - AMM: `/connectors/raydium/amm/addLiquidity`, `/connectors/uniswap/amm/poolInfo`
+  - Router: `/connectors/jupiter/router/quote`, `/connectors/0x/router/swap`, **`/connectors/dedust/router/quote`**
+  - AMM: `/connectors/raydium/amm/addLiquidity`, `/connectors/uniswap/amm/poolInfo`, **`/connectors/dedust/amm/poolInfo`**
   - CLMM: `/connectors/meteora/clmm/openPosition`, `/connectors/uniswap/clmm/collectFees`
 - Config routes: `/config/*`
-  - `/config/namespaces`: List all configuration namespaces
-  - `/config/chains`: Get available chains and networks
-  - `/config/connectors`: List available DEX connectors
 - Wallet routes: `/wallet/*`
-  - `/wallet`: List all wallets
-  - `/wallet/add`: Add new wallet
-  - `/wallet/setDefault`: Set default wallet per chain
 
 ## Coding Style Guidelines
 - TypeScript with ESNext target and CommonJS modules
@@ -64,106 +84,51 @@ This file provides guidance to AI coding assistants when working with code in th
 - Unused variables prefixed with underscore (_variable)
 - Error handling: Use Fastify's httpErrors for API errors
 
-## Project Structure
-- `src/`: Source code
-  - `chains/`: Chain-specific implementations
-    - `ethereum/`: Ethereum chain implementation with route handlers
-    - `solana/`: Solana chain implementation with route handlers
-  - `connectors/`: DEX and protocol connectors
-    - `jupiter/router-routes/`: Jupiter aggregator routes
-    - `meteora/clmm-routes/`: Meteora DLMM routes
-    - `raydium/`: Contains both `amm-routes/` and `clmm-routes/`
-    - `uniswap/`: Contains `router-routes/`, `amm-routes/`, and `clmm-routes/`
-    - `0x/router-routes/`: 0x aggregator routes
-  - `services/`: Core services and utilities
-    - `config-manager-v2.ts`: Configuration management
-    - `logger.ts`: Logging service
-    - `wallet/`: Wallet management services
-  - `schemas/`: API schemas and type definitions
-    - `chain-schema.ts`: Chain operation schemas
-    - `router-schema.ts`: Router/aggregator schemas
-    - `amm-schema.ts`: AMM operation schemas
-    - `clmm-schema.ts`: CLMM operation schemas
-  - `config/`: Configuration-related routes and utils
-    - `routes/`: Config API endpoints
-  - `wallet/`: Wallet management routes
-    - `routes/`: Wallet API endpoints
-  - `templates/`: Configuration templates
-    - `chains/`: Chain config templates
-    - `connectors/`: Connector config templates
-    - `namespace/`: JSON schema definitions
-    - `tokens/`: Token lists by network
-- `test/`: Test files mirroring src structure
-  - `mocks/`: Mock data organized by module type
-- `conf/`: Runtime configuration (created by setup)
-  - `tokens/`: Token lists for each network
+## TON Blockchain Integration
 
-## Best Practices
-- Create tests for all new functionality (minimum 75% coverage for PRs)
-- Use the logger for debug/errors (not console.log)
-- Use Fastify's httpErrors for API error responses:
-  - `fastify.httpErrors.badRequest('Invalid input')`
-  - `fastify.httpErrors.notFound('Resource not found')`
-  - `fastify.httpErrors.internalServerError('Something went wrong')`
-- Create route files in dedicated routes/ folders
-- Define schemas using TypeBox
-- Prefer async/await over promise chains
-- Follow singleton pattern for chains/connectors
+### TON Chain Implementation Details
+- **API Providers**: Uses TON Center API (primary) and DRPC (fallback) for blockchain interactions
+- **Wallet Support**: TON wallets with address formats (raw, user-friendly, bounceable/non-bounceable)
+- **Key Operations**:
+  - `getBalances()`: Get TON and Jetton (token) balances
+  - `getTokens()`: Retrieve supported Jetton information
+  - `getStatus()`: Check chain connection and latest block info
+- **Authentication**:
+  - TON Center: `X-API-Key` header
+  - DRPC: `Drpc-Key` header
 
-## Adding New Features
-- Follow existing patterns in chains/connectors directories
-- Create corresponding test files with mock data
-- Use TypeBox for all request/response schema definitions
-- Register new routes in appropriate route files
-- Update chain.routes.ts or connector.routes.ts to list new modules
+### DeDust Protocol Integration
 
-## Configuration
-- Chain configs: `src/templates/{chain}/{network}.yml`
-- Connector configs: `src/templates/{connector}.yml`
-- Token lists: `src/templates/tokens/{chain}/{network}.json`
-- AMM/CLMM pools: `src/templates/pools/{connector}.json`
-- All configs validated against JSON schemas in `src/templates/namespace/`
+#### DeDust SDK Dependencies
+```bash
+# Core TON dependencies
+npm install @ton/core @ton/ton @ton/crypto
+# DeDust SDK
+npm install @dedust/sdk
+```
 
-## Supported Networks
+#### DeDust Router v2 Operations
+- **Quote Swaps**: Multi-hop token swaps with optimal routing (A -> B -> C)
+- **Execute Swaps**: Direct swap execution with slippage protection
+- **Pool Discovery**: Automated pool finding for token pairs
+- **Gas Optimization**: Efficient transaction batching for complex routes
 
-### Ethereum & EVM Networks
-- Ethereum Mainnet
-- Arbitrum
-- Avalanche
-- Base
-- BSC (Binance Smart Chain)
-- Celo
-- Optimism
-- Polygon
-- Sepolia (testnet)
-
-### Solana Networks
-- Solana Mainnet-Beta
-- Solana Devnet
-
-## Supported DEX Connectors
-- **Jupiter** (Solana): Router-based swaps via DEX aggregator
-- **Meteora** (Solana): DLMM operations
-- **Raydium** (Solana): Standard AMM and CLMM operations
-- **Uniswap** (Ethereum/EVM): V2 AMM, V3 CLMM, and V3 Smart Order Router swaps
-- **0x** (Ethereum/EVM): Router-based swaps via DEX aggregator
-
-### Supported DEX Protocols
-
-| Protocol | Chain | Router | AMM | CLMM |
-|----------|-------|--------|-----|------|
-| Jupiter | Solana | ✅ | ❌ | ❌ |
-| Meteora | Solana | ❌ | ❌ | ✅ |
-| Raydium | Solana | ❌ | ✅ | ✅ |
-| Uniswap | Ethereum/EVM | ✅ | ✅ | ✅ |
-| 0x | Ethereum/EVM | ✅ | ❌ | ❌ |
+#### DeDust AMM Operations
+- **Pool Information**: Get pool details, reserves, and pricing
+- **Liquidity Management**: Add/remove liquidity from pools
+- **Pool Types**: Support for both volatile and stable swap pools
+- **Fee Collection**: Collect earned fees from liquidity positions
 
 ## Environment Variables
 - `GATEWAY_PASSPHRASE`: Set passphrase for wallet encryption
 - `GATEWAY_TEST_MODE=dev`: Run tests in development mode
 - `START_SERVER=true`: Required to start the server
 - `DEV=true`: Run in HTTP mode (Docker)
+- `TONCENTER_API_KEY`: TON Center API key (optional)
+- `DRPC_API_KEY`: DRPC API key for fallback (optional)
 
-## Hummingbot Gateway Endpoint Standardization
-- This repo standardized DEX and chain endpoints that are used by Hummingbot strategies. See this branch for the matching code, especially the Gateway connector classes https://github.com/hummingbot/hummingbot/tree/development
-
+## Current Implementation Phase
+- **Branch**: 001-feature-add-ton
+- **Status**: Design complete, ready for task generation
+- **Next**: Execute /tasks command to generate implementation tasks
+- **Artifacts**: research.md, data-model.md, contracts/, quickstart.md completed

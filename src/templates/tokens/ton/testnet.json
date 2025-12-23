@@ -1,0 +1,23 @@
+[
+  {
+    "chainId": 102,
+    "symbol": "TON",
+    "name": "Toncoin Testnet",
+    "address": "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
+    "decimals": 9
+  },
+  {
+    "chainId": 102,
+    "symbol": "USDT",
+    "name": "Tether USD Testnet",
+    "address": "EQBLtMvRGaW9O3XWEU84JuUCPMlYSXUOBGN0P8KrP1FFSMS0",
+    "decimals": 6
+  },
+  {
+    "chainId": 102,
+    "symbol": "USDC",
+    "name": "USD Coin Testnet",
+    "address": "EQC61IQRKXbuQ8vC5Bz7_ykHlINKHLu8b3RLU9Z8ZFI6Pvys",
+    "decimals": 6
+  }
+]

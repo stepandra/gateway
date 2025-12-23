@@ -1,0 +1,441 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TON Chain API",
+    "description": "TON blockchain operations for Hummingbot Gateway v2.8.0",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/chains/ton/status": {
+      "get": {
+        "summary": "Get TON chain status",
+        "description": "Returns current TON network status and connection info",
+        "parameters": [
+          {
+            "name": "network",
+            "in": "query",
+            "description": "Network identifier (mainnet/testnet)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["mainnet", "testnet"],
+              "default": "mainnet"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chain status information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChainStatusResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Chain unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chains/ton/tokens": {
+      "get": {
+        "summary": "Get TON token information",
+        "description": "Returns metadata for TON native tokens and Jettons",
+        "parameters": [
+          {
+            "name": "network",
+            "in": "query",
+            "description": "Network identifier",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["mainnet", "testnet"],
+              "default": "mainnet"
+            }
+          },
+          {
+            "name": "tokenSymbols",
+            "in": "query",
+            "description": "Token symbols or addresses to query",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {"type": "string"},
+                {"type": "array", "items": {"type": "string"}}
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token symbols",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chains/ton/balances": {
+      "post": {
+        "summary": "Get TON wallet balances",
+        "description": "Returns native TON and Jetton balances for wallet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BalancesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wallet balances",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalancesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid wallet address",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chains/ton/poll": {
+      "post": {
+        "summary": "Poll transaction status",
+        "description": "Check status and confirmation of TON transaction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PollRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transaction status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PollResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaction not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chains/ton/estimate-gas": {
+      "post": {
+        "summary": "Estimate transaction gas",
+        "description": "Estimate gas cost for TON transaction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateGasRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gas estimation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateGasResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid transaction parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChainStatusResponse": {
+        "type": "object",
+        "required": ["chain", "network", "rpcUrl", "currentBlockNumber", "nativeCurrency"],
+        "properties": {
+          "chain": {
+            "type": "string",
+            "enum": ["ton"]
+          },
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"]
+          },
+          "rpcUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "currentBlockNumber": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "nativeCurrency": {
+            "type": "string",
+            "enum": ["TON"]
+          }
+        }
+      },
+      "TokensResponse": {
+        "type": "object",
+        "required": ["tokens"],
+        "properties": {
+          "tokens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenInfo"
+            }
+          }
+        }
+      },
+      "TokenInfo": {
+        "type": "object",
+        "required": ["symbol", "address", "decimals", "name"],
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]{1,20}$"
+          },
+          "address": {
+            "type": "string",
+            "description": "User-friendly bounceable address"
+          },
+          "decimals": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 18
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        }
+      },
+      "BalancesRequest": {
+        "type": "object",
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          },
+          "address": {
+            "type": "string",
+            "description": "Wallet address to query"
+          },
+          "tokens": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Token symbols or addresses to include"
+          },
+          "fetchAll": {
+            "type": "boolean",
+            "default": false,
+            "description": "Fetch all tokens in wallet"
+          }
+        }
+      },
+      "BalancesResponse": {
+        "type": "object",
+        "required": ["balances"],
+        "properties": {
+          "balances": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "PollRequest": {
+        "type": "object",
+        "required": ["signature"],
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          },
+          "signature": {
+            "type": "string",
+            "description": "Transaction hash to poll"
+          },
+          "tokens": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Tokens for balance change calculation"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "Wallet address for balance changes"
+          }
+        }
+      },
+      "PollResponse": {
+        "type": "object",
+        "required": ["currentBlock", "signature", "txStatus"],
+        "properties": {
+          "currentBlock": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "signature": {
+            "type": "string"
+          },
+          "txBlock": {
+            "type": "integer",
+            "minimum": 0,
+            "nullable": true
+          },
+          "txStatus": {
+            "type": "integer",
+            "enum": [-1, 0, 1],
+            "description": "0=PENDING, 1=CONFIRMED, -1=FAILED"
+          },
+          "fee": {
+            "type": "number",
+            "minimum": 0,
+            "nullable": true
+          },
+          "tokenBalanceChanges": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "txData": {
+            "type": "object",
+            "nullable": true
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "EstimateGasRequest": {
+        "type": "object",
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "default": "mainnet"
+          }
+        }
+      },
+      "EstimateGasResponse": {
+        "type": "object",
+        "required": ["feePerComputeUnit", "denomination", "computeUnits", "feeAsset", "fee", "timestamp"],
+        "properties": {
+          "feePerComputeUnit": {
+            "type": "number",
+            "minimum": 0
+          },
+          "denomination": {
+            "type": "string",
+            "enum": ["nanoTON"]
+          },
+          "computeUnits": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "feeAsset": {
+            "type": "string",
+            "enum": ["TON"]
+          },
+          "fee": {
+            "type": "number",
+            "minimum": 0
+          },
+          "timestamp": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["statusCode", "error", "message"],
+        "properties": {
+          "statusCode": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

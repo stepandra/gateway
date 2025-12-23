@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "chainId": {
+      "type": "integer",
+      "description": "TON chain identifier",
+      "enum": [101, 102]
+    },
+    "tonClientEndpoint": {
+      "type": "string",
+      "description": "Primary TON client API endpoint",
+      "format": "uri"
+    },
+    "drpcEndpoint": {
+      "type": "string",
+      "description": "Fallback DRPC endpoint",
+      "format": "uri"
+    },
+    "explorerUrl": {
+      "type": "string",
+      "description": "Blockchain explorer URL",
+      "format": "uri"
+    },
+    "gasLimit": {
+      "type": "string",
+      "description": "Default gas limit for transactions",
+      "pattern": "^[0-9]+(\\.[0-9]+)?$"
+    },
+    "requestTimeout": {
+      "type": "number",
+      "description": "Request timeout in milliseconds",
+      "minimum": 1000,
+      "maximum": 60000
+    },
+    "maxRetries": {
+      "type": "integer",
+      "description": "Maximum retry attempts for failed requests",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "providerHealthCheckInterval": {
+      "type": "number",
+      "description": "Provider health check interval in milliseconds",
+      "minimum": 1000,
+      "maximum": 300000
+    }
+  },
+  "required": ["chainId", "tonClientEndpoint", "explorerUrl"],
+  "additionalProperties": false
+}

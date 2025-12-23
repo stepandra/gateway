@@ -18,16 +18,16 @@ Gateway can be accessed through:
 - **Hummingbot Client**: For automated trading strategies, use the [Hummingbot repository](https://github.com/hummingbot/hummingbot)
 
 ### Key Features
-- **Standardized REST API**: Consistent endpoints for interacting with blockchains (Ethereum, Solana) and DEXs (Uniswap, Jupiter, Raydium, Meteora, 0x)
+- **Standardized REST API**: Consistent endpoints for interacting with blockchains (Ethereum, Solana, TON) and DEXs (Uniswap, Jupiter, Raydium, Meteora, DeDust, 0x)
 - **Three Trading Types**: Router (DEX aggregators), AMM (V2-style pools), and CLMM (V3-style concentrated liquidity)
 - **Modular Architecture**: Clear separation of concerns with distinct modules for chains, connectors, configuration, and wallet management
-- **TypeScript-based**: Leverages the TypeScript ecosystem and popular libraries like Fastify, Ethers.js, and Solana/web3.js
+- **TypeScript-based**: Leverages the TypeScript ecosystem and popular libraries like Fastify, Ethers.js, Solana/web3.js, and TON SDK
 - **Security**: Built-in rate limiting (100 requests/minute) to prevent DoS attacks
 - **Extensible**: Easily extended with new chains and connectors
 
 ### Core Technologies
 - **Backend**: Node.js, TypeScript, Fastify
-- **Blockchain Interaction**: Ethers.js (Ethereum), @solana/web3.js (Solana)
+- **Blockchain Interaction**: Ethers.js (Ethereum), @solana/web3.js (Solana), @ton/ton (TON)
 - **Package Manager**: pnpm
 - **Testing**: Jest
 - **Linting/Formatting**: ESLint, Prettier
@@ -54,6 +54,10 @@ Gateway may be used alongside the main [Hummingbot client](https://github.com/hu
 - Solana Mainnet-Beta
 - Solana Devnet
 
+### TON Networks
+- TON Mainnet
+- TON Testnet
+
 ### Supported DEX Protocols
 
 | Protocol | Chain | Router | AMM | CLMM | Description |
@@ -63,6 +67,7 @@ Gateway may be used alongside the main [Hummingbot client](https://github.com/hu
 | Raydium | Solana | ❌ | ✅ | ✅ | Full-featured DEX with V2 AMM and V3 CLMM |
 | Uniswap | Ethereum/EVM | ✅ | ✅ | ✅ | Complete V2 AMM, V3 CLMM, and Smart Order Router |
 | 0x | Ethereum/EVM | ✅ | ❌ | ❌ | DEX aggregator with professional market making features |
+| DeDust | TON | ✅ | ✅ | ❌ | High-performance DEX with Router v2 and AMM pools |
 
 #### Trading Types Explained:
 - **Router**: DEX aggregators that find optimal swap routes across multiple liquidity sources

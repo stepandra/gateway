@@ -1,0 +1,50 @@
+[
+  {
+    "type": "amm",
+    "network": "mainnet",
+    "baseSymbol": "TON",
+    "quoteSymbol": "USDT",
+    "address": "EQD1Mh2skcSwi2o3wETe8Zg0TUYqbI7Z_3lk4iRVZSUEfyZN",
+    "poolType": "volatile"
+  },
+  {
+    "type": "amm",
+    "network": "mainnet",
+    "baseSymbol": "TON",
+    "quoteSymbol": "USDC",
+    "address": "EQBz0WD7M9CXd_dDTl3_lF2S6OFJFHjnLVQC5L5HWJpOktIP",
+    "poolType": "volatile"
+  },
+  {
+    "type": "amm",
+    "network": "mainnet",
+    "baseSymbol": "USDT",
+    "quoteSymbol": "USDC",
+    "address": "EQBwOdS3eGa1C0QWWk2LZb4Q2f7-7L3-oP3Vm4oLrq5W3Tm6",
+    "poolType": "stable"
+  },
+  {
+    "type": "amm",
+    "network": "mainnet",
+    "baseSymbol": "NOT",
+    "quoteSymbol": "TON",
+    "address": "EQCDNv0j8dL8YRwRZ4aL_Eg7w1BNcXNKN7-P4L8fPK9bG9VW",
+    "poolType": "volatile"
+  },
+  {
+    "type": "amm",
+    "network": "testnet",
+    "baseSymbol": "TON",
+    "quoteSymbol": "USDT",
+    "address": "EQBtestPool1_TonUsdt_ForTestingOnly123456789ABC",
+    "poolType": "volatile"
+  },
+  {
+    "type": "amm",
+    "network": "testnet",
+    "baseSymbol": "TON",
+    "quoteSymbol": "USDC",
+    "address": "EQBtestPool2_TonUsdc_ForTestingOnly123456789DEF",
+    "poolType": "volatile"
+  }
+]

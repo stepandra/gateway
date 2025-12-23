@@ -2,6 +2,7 @@ import { Type, Static } from '@sinclair/typebox';
 import { FastifyPluginAsync } from 'fastify';
 
 import { ZeroXConfig } from '../../connectors/0x/0x.config';
+import { DedustConfig } from '../../connectors/dedust/dedust.config';
 import { JupiterConfig } from '../../connectors/jupiter/jupiter.config';
 import { MeteoraConfig } from '../../connectors/meteora/meteora.config';
 import { RaydiumConfig } from '../../connectors/raydium/raydium.config';
@@ -69,6 +70,12 @@ export const getConnectorsRoute: FastifyPluginAsync = async (fastify) => {
           trading_types: [...ZeroXConfig.tradingTypes],
           chain: ZeroXConfig.chain,
           networks: [...ZeroXConfig.networks],
+        },
+        {
+          name: 'dedust',
+          trading_types: [...DedustConfig.tradingTypes],
+          chain: DedustConfig.chain,
+          networks: [...DedustConfig.networks],
         },
       ];
 

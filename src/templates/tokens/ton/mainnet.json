@@ -1,0 +1,37 @@
+[
+  {
+    "chainId": 101,
+    "symbol": "TON",
+    "name": "Toncoin",
+    "address": "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
+    "decimals": 9
+  },
+  {
+    "chainId": 101,
+    "symbol": "USDT",
+    "name": "Tether USD",
+    "address": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+    "decimals": 6
+  },
+  {
+    "chainId": 101,
+    "symbol": "USDC",
+    "name": "USD Coin",
+    "address": "EQB-MPwrd1G6WKNkLz_VnV6WqBDd142KMQv-g1O-8QUA3728",
+    "decimals": 6
+  },
+  {
+    "chainId": 101,
+    "symbol": "jUSDT",
+    "name": "Jetton USDT",
+    "address": "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA",
+    "decimals": 6
+  },
+  {
+    "chainId": 101,
+    "symbol": "NOT",
+    "name": "Notcoin",
+    "address": "EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT",
+    "decimals": 9
+  }
+]
