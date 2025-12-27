@@ -1,3 +1,6 @@
+// Load environment variables from .env file
+import 'dotenv/config';
+
 // External dependencies
 import { spawn } from 'child_process';
 import { exec } from 'child_process';
@@ -15,8 +18,11 @@ import Fastify, { FastifyInstance } from 'fastify';
 // Routes
 import { ethereumRoutes } from './chains/ethereum/ethereum.routes';
 import { solanaRoutes } from './chains/solana/solana.routes';
+import { tonRoutes } from './chains/ton/ton.routes';
 import { configRoutes } from './config/config.routes';
 import { register0xRoutes } from './connectors/0x/0x.routes';
+import { dedustRoutes } from './connectors/dedust/dedust.routes';
+import { dedustAmmRoutes } from './connectors/dedust/dedust.amm.routes';
 import { jupiterRoutes } from './connectors/jupiter/jupiter.routes';
 import { meteoraRoutes } from './connectors/meteora/meteora.routes';
 import { orcaRoutes } from './connectors/orca/orca.routes';
@@ -240,8 +246,12 @@ const configureGatewayServer = () => {
     // Register chain routes
     app.register(solanaRoutes, { prefix: '/chains/solana' });
     app.register(ethereumRoutes, { prefix: '/chains/ethereum' });
+    app.register(tonRoutes, { prefix: '/chains/ton' });
 
     // Register DEX connector routes - organized by connector
+
+    app.register(dedustRoutes, { prefix: '/connectors/dedust/router' });
+    app.register(dedustAmmRoutes, { prefix: '/connectors/dedust/amm' });
 
     // Jupiter routes
     app.register(jupiterRoutes.router, {
