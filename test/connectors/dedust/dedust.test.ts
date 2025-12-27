@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { DeDust } from '../../../src/connectors/dedust/dedust';
+
 import { Ton } from '../../../src/chains/ton/ton';
+import { DeDust } from '../../../src/connectors/dedust/dedust';
 import { ConfigManagerV2 } from '../../../src/services/config-manager-v2';
 
 jest.mock('axios');

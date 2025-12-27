@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
-import { Ton } from '../ton';
+
 import { TokensRequestSchema, TokensResponseType } from '../../../schemas/chain-schema';
+import { Ton } from '../ton';
 
 export const tokensRoute: FastifyPluginAsync = async (fastify) => {
   fastify.get<{ Querystring: { network?: string } }>(
@@ -18,11 +19,11 @@ export const tokensRoute: FastifyPluginAsync = async (fastify) => {
       if (!ton.initialized) await ton.init();
 
       return {
-        tokens: ton.getTokens().map(t => ({
+        tokens: ton.getTokens().map((t) => ({
           symbol: t.symbol,
           address: t.address,
           decimals: t.decimals,
-          name: t.name
+          name: t.name,
         })),
       };
     },

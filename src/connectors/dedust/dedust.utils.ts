@@ -26,16 +26,16 @@ export class DeDustAsset {
 
   static fromCell(cell: Cell): DeDustAsset {
     const s = cell.beginParse();
-    
+
     // CPMM v3 uses MsgAddress directly (TLB: _#_ value:MsgAddress = Asset)
     // Try to load as MsgAddress first
     const address = s.loadMaybeAddress();
-    
+
     if (address === null) {
       // addr_none (00) = native TON
       return DeDustAsset.native();
     }
-    
+
     // External address check (addr_extern = 01)
     // For now treat as jetton
     return DeDustAsset.jetton(address);
@@ -75,8 +75,8 @@ export class DeDustAsset {
     const hashA = this.address!.hash;
     const hashB = other.address!.hash;
     for (let i = 0; i < hashA.length; i++) {
-        if (hashA[i] < hashB[i]) return -1;
-        if (hashA[i] > hashB[i]) return 1;
+      if (hashA[i] < hashB[i]) return -1;
+      if (hashA[i] > hashB[i]) return 1;
     }
     return 0;
   }
@@ -85,10 +85,10 @@ export class DeDustAsset {
 export class DeDustAddressUtils {
   static getVaultAddress(factory: Address, asset: DeDustAsset): Address {
     const assetCell = asset.toCell();
-    
+
     // Vault params: just the asset slice
     const params = beginCell().storeSlice(assetCell.beginParse());
-    
+
     return this.createAddress(factory, TYPE_VAULT, params);
   }
 
@@ -107,11 +107,7 @@ export class DeDustAddressUtils {
   }
 
   private static createAddress(factory: Address, contractType: number, params: any): Address {
-    const dataCell = beginCell()
-      .storeAddress(factory)
-      .storeUint(contractType, 8)
-      .storeBuilder(params)
-      .endCell();
+    const dataCell = beginCell().storeAddress(factory).storeUint(contractType, 8).storeBuilder(params).endCell();
 
     // StateInit: code + data + library(null)
     // defined in address.go as: MustStoreUInt(0, 2) . StoreMaybeRef(code) . StoreMaybeRef(data) . StoreDict(nil)

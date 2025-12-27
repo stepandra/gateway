@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
-import { DeDustAMM } from '../../../src/connectors/dedust/dedust.amm';
+
 import { gatewayApp } from '../../../src/app';
+import { DeDustAMM } from '../../../src/connectors/dedust/dedust.amm';
 
 jest.mock('../../../src/connectors/dedust/dedust.amm', () => {
   const mockAmm = {
@@ -43,7 +44,6 @@ describe('DeDust AMM Routes', () => {
     });
 
     const response = await app.inject({
-
       method: 'GET',
       url: '/connectors/dedust/amm/pool-info',
       query: {
@@ -65,7 +65,6 @@ describe('DeDust AMM Routes', () => {
     });
 
     const response = await app.inject({
-
       method: 'POST',
       url: '/connectors/dedust/amm/add-liquidity',
       body: {
@@ -90,7 +89,6 @@ describe('DeDust AMM Routes', () => {
     });
 
     const response = await app.inject({
-
       method: 'POST',
       url: '/connectors/dedust/amm/remove-liquidity',
       body: {
@@ -118,7 +116,6 @@ describe('DeDust AMM Routes', () => {
     });
 
     const response = await app.inject({
-
       method: 'GET',
       url: '/connectors/dedust/amm/position-info',
       query: {
@@ -142,7 +139,6 @@ describe('DeDust AMM Routes', () => {
     });
 
     const response = await app.inject({
-
       method: 'GET',
       url: '/connectors/dedust/amm/quote-liquidity',
       query: {
@@ -164,7 +160,6 @@ describe('DeDust AMM Routes', () => {
     });
 
     const response = await app.inject({
-
       method: 'POST',
       url: '/connectors/dedust/amm/claim-fees',
       body: {

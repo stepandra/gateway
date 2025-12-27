@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import { ToncenterService } from '../../../src/chains/ton/toncenter-service';
 
 jest.mock('axios');
@@ -8,7 +9,7 @@ describe('ToncenterService', () => {
   let service: ToncenterService;
   const apiKey = 'test-api-key';
   const baseUrl = 'https://toncenter.com';
-  
+
   // Create a mock instance for the axios client created inside the service
   const mockAxiosInstance = {
     post: jest.fn(),
@@ -19,7 +20,7 @@ describe('ToncenterService', () => {
     jest.clearAllMocks();
     // When axios.create is called, return our mock instance
     mockedAxios.create.mockReturnValue(mockAxiosInstance as any);
-    
+
     service = new ToncenterService(baseUrl, apiKey);
   });
 
@@ -49,10 +50,7 @@ describe('ToncenterService', () => {
         },
       });
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith(
-        '/api/v3/message',
-        { boc }
-      );
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/api/v3/message', { boc });
       expect(result).toEqual({
         message_hash: 'msg-hash',
         message_hash_norm: 'msg-hash-norm',
@@ -94,12 +92,9 @@ describe('ToncenterService', () => {
 
       const result = await service.transactionsByMessage(msgHash);
 
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith(
-        '/api/v3/transactionsByMessage',
-        {
-          params: { msg_hash: msgHash, direction: 'in', limit: 1, offset: 0 },
-        }
-      );
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/v3/transactionsByMessage', {
+        params: { msg_hash: msgHash, direction: 'in', limit: 1, offset: 0 },
+      });
       expect(result).toEqual(expectedResponse.transactions);
     });
 

@@ -1,7 +1,8 @@
-import { DeDustAMM } from '../../../src/connectors/dedust/dedust.amm';
-import { Ton } from '../../../src/chains/ton/ton';
 import { Address, toNano, beginCell } from '@ton/core';
+
+import { Ton } from '../../../src/chains/ton/ton';
 import { parseUnits } from '../../../src/chains/ton/ton.utils';
+import { DeDustAMM } from '../../../src/connectors/dedust/dedust.amm';
 
 jest.mock('../../../src/chains/ton/ton');
 
@@ -17,9 +18,7 @@ describe('DeDustAMM', () => {
       rpcProvider: {
         getProvider: jest.fn(),
       },
-      tokenList: [
-        { symbol: 'USDT', address: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', decimals: 6 },
-      ],
+      tokenList: [{ symbol: 'USDT', address: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', decimals: 6 }],
       nativeTokenSymbol: 'TON',
     };
     (Ton.getInstance as jest.Mock).mockReturnValue(mockTon);
@@ -48,19 +47,20 @@ describe('DeDustAMM', () => {
 
       // Mock get_pool_data response
       const reader = {
-        readNumber: jest.fn()
+        readNumber: jest
+          .fn()
           .mockReturnValueOnce(2) // status
           .mockReturnValueOnce(30), // baseFeeBps
-        readBoolean: jest.fn()
+        readBoolean: jest
+          .fn()
           .mockReturnValueOnce(true) // depositActive
           .mockReturnValueOnce(true), // swapActive
-        readBigNumber: jest.fn()
+        readBigNumber: jest
+          .fn()
           .mockReturnValueOnce(toNano('100')) // reserveX (TON, 9)
           .mockReturnValueOnce(parseUnits('500', 6)) // reserveY (USDT, 6)
           .mockReturnValueOnce(toNano('1000')), // liquidity
-        readCell: jest.fn()
-          .mockReturnValueOnce(tonAsset)
-          .mockReturnValueOnce(usdtAsset),
+        readCell: jest.fn().mockReturnValueOnce(tonAsset).mockReturnValueOnce(usdtAsset),
         readCellOpt: jest.fn(),
       };
 
@@ -74,8 +74,8 @@ describe('DeDustAMM', () => {
 
       expect(result.address).toBe('EQA-X_yo3fzzbDbJ_0bzFWKqtRuZFIRa1sJsveZJ1YpViO3r');
       expect(result.baseTokenAmount).toBe(100); // 100 TON
-      expect(result.quoteTokenAmount).toBe(500); // 500 USDT (mocked decimals 6?) 
-      // Wait, if USDT decimals are 6, toNano('500') is 500 * 10^9. 
+      expect(result.quoteTokenAmount).toBe(500); // 500 USDT (mocked decimals 6?)
+      // Wait, if USDT decimals are 6, toNano('500') is 500 * 10^9.
       // Mapping should use proper decimals.
       expect(result.feePct).toBe(0.3);
     });
@@ -85,7 +85,7 @@ describe('DeDustAMM', () => {
     it('should return position info for a wallet', async () => {
       const poolAddress = 'EQA-X_yo3fzzbDbJ_0bzFWKqtRuZFIRa1sJsveZJ1YpViO3r';
       const walletAddress = 'UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJKZ';
-      
+
       const tonAsset = beginCell().storeUint(0, 4).endCell();
       const usdtAddress = Address.parse('EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs');
       const usdtAsset = beginCell()
@@ -98,7 +98,8 @@ describe('DeDustAMM', () => {
       const poolReader = {
         readNumber: jest.fn().mockReturnValueOnce(2).mockReturnValueOnce(30),
         readBoolean: jest.fn().mockReturnValue(true),
-        readBigNumber: jest.fn()
+        readBigNumber: jest
+          .fn()
           .mockReturnValueOnce(toNano('100')) // reserveX
           .mockReturnValueOnce(parseUnits('500', 6)) // reserveY
           .mockReturnValueOnce(toNano('1000')), // totalLiquidity (LP supply)
@@ -129,7 +130,7 @@ describe('DeDustAMM', () => {
   describe('quoteLiquidity', () => {
     it('should return quote for adding liquidity', async () => {
       const poolAddress = 'EQA-X_yo3fzzbDbJ_0bzFWKqtRuZFIRa1sJsveZJ1YpViO3r';
-      
+
       const tonAsset = beginCell().storeUint(0, 4).endCell();
       const usdtAddress = Address.parse('EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs');
       const usdtAsset = beginCell()
@@ -142,7 +143,8 @@ describe('DeDustAMM', () => {
       const poolReader = {
         readNumber: jest.fn().mockReturnValueOnce(2).mockReturnValueOnce(30),
         readBoolean: jest.fn().mockReturnValue(true),
-        readBigNumber: jest.fn()
+        readBigNumber: jest
+          .fn()
           .mockReturnValueOnce(toNano('100')) // reserveX
           .mockReturnValueOnce(parseUnits('500', 6)) // reserveY
           .mockReturnValueOnce(toNano('1000')), // totalLiquidity
@@ -170,7 +172,7 @@ describe('DeDustAMM', () => {
     it('should add liquidity for TON/USDT', async () => {
       const poolAddress = 'EQA-X_yo3fzzbDbJ_0bzFWKqtRuZFIRa1sJsveZJ1YpViO3r';
       const walletAddress = 'UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJKZ';
-      
+
       const tonAsset = beginCell().storeUint(0, 4).endCell();
       const usdtAddress = Address.parse('EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs');
       const usdtAsset = beginCell()
@@ -183,7 +185,8 @@ describe('DeDustAMM', () => {
       const poolReader = {
         readNumber: jest.fn().mockReturnValueOnce(2).mockReturnValueOnce(30),
         readBoolean: jest.fn().mockReturnValue(true),
-        readBigNumber: jest.fn()
+        readBigNumber: jest
+          .fn()
           .mockReturnValueOnce(toNano('100'))
           .mockReturnValueOnce(parseUnits('500', 6))
           .mockReturnValueOnce(toNano('1000')),

@@ -1,7 +1,20 @@
-import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { DeDustAMM } from './dedust.amm';
-import { AddLiquidityRequest, AddLiquidityResponse, GetPoolInfoRequest, GetPositionInfoRequest, PoolInfoSchema, PositionInfoSchema, QuoteLiquidityRequest, QuoteLiquidityResponse, RemoveLiquidityRequest, RemoveLiquidityResponse } from '../../schemas/amm-schema';
 import { Type } from '@sinclair/typebox';
+import { FastifyInstance, FastifyPluginAsync } from 'fastify';
+
+import {
+  AddLiquidityRequest,
+  AddLiquidityResponse,
+  GetPoolInfoRequest,
+  GetPositionInfoRequest,
+  PoolInfoSchema,
+  PositionInfoSchema,
+  QuoteLiquidityRequest,
+  QuoteLiquidityResponse,
+  RemoveLiquidityRequest,
+  RemoveLiquidityResponse,
+} from '../../schemas/amm-schema';
+
+import { DeDustAMM } from './dedust.amm';
 
 export const dedustAmmRoutes: FastifyPluginAsync = async (gatewayApp: FastifyInstance) => {
   gatewayApp.get(

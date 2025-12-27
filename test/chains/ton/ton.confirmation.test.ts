@@ -46,9 +46,7 @@ describe('Ton Transaction Confirmation', () => {
   });
 
   it('should confirm success using actions', async () => {
-    mockRpcProvider.actionsByMessage.mockResolvedValue([
-      { status: 'ok', type: 'JettonTransfer' }
-    ]);
+    mockRpcProvider.actionsByMessage.mockResolvedValue([{ status: 'ok', type: 'JettonTransfer' }]);
 
     const result = await ton.waitForTransactionConfirmation('hash-success');
     expect(result.confirmed).toBe(true);
@@ -57,9 +55,7 @@ describe('Ton Transaction Confirmation', () => {
   });
 
   it('should confirm failure using actions', async () => {
-    mockRpcProvider.actionsByMessage.mockResolvedValue([
-      { status: 'failed', type: 'JettonTransfer' }
-    ]);
+    mockRpcProvider.actionsByMessage.mockResolvedValue([{ status: 'failed', type: 'JettonTransfer' }]);
 
     const result = await ton.waitForTransactionConfirmation('hash-fail');
     expect(result.confirmed).toBe(true);
@@ -73,9 +69,9 @@ describe('Ton Transaction Confirmation', () => {
       {
         description: {
           compute_ph: { exit_code: 0 },
-          action_ph: { result_code: 0 }
-        }
-      }
+          action_ph: { result_code: 0 },
+        },
+      },
     ]);
 
     const result = await ton.waitForTransactionConfirmation('hash-tx-fallback');
@@ -89,8 +85,8 @@ describe('Ton Transaction Confirmation', () => {
       {
         description: {
           compute_ph: { exit_code: 101 }, // Error
-        }
-      }
+        },
+      },
     ]);
 
     const result = await ton.waitForTransactionConfirmation('hash-tx-fail');

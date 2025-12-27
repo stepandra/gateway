@@ -19,7 +19,8 @@ export type TonConfig = Static<typeof TonConfigSchema>;
 
 export const PollRequest = Type.Object({
   network: Type.Optional(Type.String({ default: 'mainnet' })),
-  txHash: Type.String(),
+  txHash: Type.Optional(Type.String({ description: 'Transaction hash (TON format)' })),
+  signature: Type.Optional(Type.String({ description: 'Alias for txHash (hummingbot-api compatibility)' })),
 });
 
 export type PollRequestType = Static<typeof PollRequest>;

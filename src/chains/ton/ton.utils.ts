@@ -58,9 +58,7 @@ export function parseUnits(amount: number | string, decimals: number): bigint {
   }
 
   if (fractionalPart.length > decimals) {
-    throw new Error(
-      `Fractional part ${fractionalPart} exceeds allowed decimals (${decimals}) for amount: ${amount}`,
-    );
+    throw new Error(`Fractional part ${fractionalPart} exceeds allowed decimals (${decimals}) for amount: ${amount}`);
   }
 
   const paddedFractional = fractionalPart.padEnd(decimals, '0');

@@ -234,7 +234,7 @@ export class TokenService {
           // We can't easily import @ton/core here without potentially causing circular deps or large imports
           // So we use the regex from src/chains/ton/ton.utils.ts
           if (token.address !== 'native' && !/^[-0-1]:[a-fA-F0-9]{64}$/.test(token.address)) {
-             throw new Error('Invalid TON raw address');
+            throw new Error('Invalid TON raw address');
           }
         } catch (error) {
           throw new Error(`Invalid TON address: ${error.message}`);

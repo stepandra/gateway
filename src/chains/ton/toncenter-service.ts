@@ -1,5 +1,6 @@
-import axios, { AxiosInstance } from 'axios';
 import { Address, Cell, beginCell, ContractProvider, TupleReader } from '@ton/core';
+import axios, { AxiosInstance } from 'axios';
+
 import { logger } from '../../services/logger';
 
 export interface ToncenterMessageResponse {

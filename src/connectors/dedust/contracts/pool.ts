@@ -1,4 +1,5 @@
 import { Address, beginCell, Cell, Contract, ContractProvider, Sender, toNano } from '@ton/core';
+
 import { DeDustAsset } from '../dedust.utils';
 
 // Opcodes
@@ -32,7 +33,7 @@ export class DeDustPoolContract implements Contract {
     // Actually, PayNative is used when sending TON to the pool.
     // If we are just building the *body* for a transaction, we need to know if it's Native or Jetton transfer.
     // But this method likely returns the inner payload that goes into `payment_payload` of PayNative/Jetton.
-    
+
     // Let's assume we are building the `PayNative` body for now, which wraps the `Deposit` payload.
     // NOTE: In DeDust v3, to deposit, you send `PayNative` (if TON) or `PayJetton` (transfer notification)
     // with `Deposit` as the `payment_payload`.
@@ -57,15 +58,17 @@ export class DeDustPoolContract implements Contract {
       .storeUint(0, 2) // excesses_to (addr_none -> sender)
       .endCell();
 
-    return beginCell()
-      .storeUint(OP_PAY_NATIVE, 32)
-      .storeUint(params.queryId ?? 0n, 64)
-      .storeCoins(params.amountA) // amount to credit? This should be the TON amount sent?
-      // Wait, PayNative has `amount`. This is the amount of TON being paid/credited to the pool.
-      // If we are depositing, we are paying `amountA`.
-      .storeRef(depositBody)
-      .storeRef(payoutConfig)
-      .endCell();
+    return (
+      beginCell()
+        .storeUint(OP_PAY_NATIVE, 32)
+        .storeUint(params.queryId ?? 0n, 64)
+        .storeCoins(params.amountA) // amount to credit? This should be the TON amount sent?
+        // Wait, PayNative has `amount`. This is the amount of TON being paid/credited to the pool.
+        // If we are depositing, we are paying `amountA`.
+        .storeRef(depositBody)
+        .storeRef(payoutConfig)
+        .endCell()
+    );
   }
 
   createWithdrawPayload(params: {
@@ -77,16 +80,16 @@ export class DeDustPoolContract implements Contract {
   }): Cell {
     // BasicPayoutConfig: options, excesses_to
     const payoutOptions = beginCell()
-        .storeAddress(params.targetAddress ?? null) // destination
-        .storeCoins(0n) // extra_gas
-        .storeMaybeRef(null) // payload
-        .storeBit(false) // wrap_payload
-        .endCell();
-    
+      .storeAddress(params.targetAddress ?? null) // destination
+      .storeCoins(0n) // extra_gas
+      .storeMaybeRef(null) // payload
+      .storeBit(false) // wrap_payload
+      .endCell();
+
     const payoutConfig = beginCell()
-        .storeSlice(payoutOptions.beginParse()) // options
-        .storeAddress(null) // excesses_to
-        .endCell();
+      .storeSlice(payoutOptions.beginParse()) // options
+      .storeAddress(null) // excesses_to
+      .endCell();
 
     return beginCell()
       .storeUint(OP_WITHDRAW, 32)
@@ -99,10 +102,12 @@ export class DeDustPoolContract implements Contract {
       .endCell();
   }
 
-  createClaimFeesPayload(params: {
-    queryId?: bigint;
-    excessesTo?: Address;
-  } = {}): Cell {
+  createClaimFeesPayload(
+    params: {
+      queryId?: bigint;
+      excessesTo?: Address;
+    } = {},
+  ): Cell {
     return beginCell()
       .storeUint(OP_CLAIM_FEES, 32)
       .storeUint(params.queryId ?? 0n, 64)
@@ -133,15 +138,15 @@ export class DeDustPoolContract implements Contract {
     const status = stack.readNumber();
     const depositActive = stack.readBoolean();
     const swapActive = stack.readBoolean();
-    
+
     const assetX = DeDustAsset.fromCell(stack.readCell());
     const assetY = DeDustAsset.fromCell(stack.readCell());
-    
+
     // Skip dictionaries: walletsByAsset, assetsByWallets, resolutions
     stack.readCellOpt(); // walletsByAsset
     stack.readCellOpt(); // assetsByWallets
     stack.readCellOpt(); // resolutions (may be null/list)
-    
+
     const baseFeeBps = stack.readNumber();
     const reserveX = stack.readBigNumber();
     const reserveY = stack.readBigNumber();

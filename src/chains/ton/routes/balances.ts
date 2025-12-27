@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
-import { Ton } from '../ton';
+
 import { BalanceRequestSchema, BalanceResponseType } from '../../../schemas/chain-schema';
+import { Ton } from '../ton';
 
 export const balancesRoute: FastifyPluginAsync = async (fastify) => {
   fastify.post<{ Body: { network?: string; address: string; tokens?: string[] } }>(

@@ -1,10 +1,23 @@
-import { Ton } from '../../chains/ton/ton';
-import { DeDustConfig, getDeDustConfig } from './dedust.config';
-import { AddLiquidityRequestType, AddLiquidityResponseType, GetPoolInfoRequestType, GetPositionInfoRequestType, PoolInfo, PositionInfo, QuoteLiquidityRequestType, QuoteLiquidityResponseType, RemoveLiquidityRequestType, RemoveLiquidityResponseType } from '../../schemas/amm-schema';
-import { DeDustPoolContract } from './contracts/pool';
 import { Address, Cell, beginCell, internal, toNano } from '@ton/core';
+
+import { Ton } from '../../chains/ton/ton';
 import { formatUnits, parseUnits } from '../../chains/ton/ton.utils';
+import {
+  AddLiquidityRequestType,
+  AddLiquidityResponseType,
+  GetPoolInfoRequestType,
+  GetPositionInfoRequestType,
+  PoolInfo,
+  PositionInfo,
+  QuoteLiquidityRequestType,
+  QuoteLiquidityResponseType,
+  RemoveLiquidityRequestType,
+  RemoveLiquidityResponseType,
+} from '../../schemas/amm-schema';
 import { httpErrors } from '../../services/error-handler';
+
+import { DeDustPoolContract } from './contracts/pool';
+import { DeDustConfig, getDeDustConfig } from './dedust.config';
 
 export class DeDustAMM {
   private static _instances: { [name: string]: DeDustAMM } = {};
@@ -26,9 +39,7 @@ export class DeDustAMM {
   async poolInfo(request: GetPoolInfoRequestType): Promise<PoolInfo> {
     const poolAddress = Address.parse(request.poolAddress);
     const contract = new DeDustPoolContract(poolAddress);
-    const poolData = await contract.getPoolData(
-      this.chain.rpcProvider.getProvider(poolAddress),
-    );
+    const poolData = await contract.getPoolData(this.chain.rpcProvider.getProvider(poolAddress));
 
     const assetX = poolData.assetX;
     const assetY = poolData.assetY;
@@ -58,7 +69,7 @@ export class DeDustAMM {
     const poolAddress = Address.parse(request.poolAddress);
     const ownerAddress = Address.parse(request.walletAddress);
     const poolProvider = this.chain.rpcProvider.getProvider(poolAddress);
-    
+
     const poolContract = new DeDustPoolContract(poolAddress);
     const poolData = await poolContract.getPoolData(poolProvider);
 
@@ -75,11 +86,11 @@ export class DeDustAMM {
         { type: 'slice', cell: beginCell().storeAddress(ownerAddress).endCell() },
       ]);
       const positionAddress = posAddrStack.readAddress();
-      
+
       // Get position data
       const posProvider = this.chain.rpcProvider.getProvider(positionAddress);
       const { stack: posDataStack } = await posProvider.get('get_position_data', []);
-      
+
       posDataStack.readAddress(); // poolAddress
       posDataStack.readAddress(); // ownerAddress
       userLiquidity = posDataStack.readBigNumber(); // liquidity
@@ -111,9 +122,7 @@ export class DeDustAMM {
   async quoteLiquidity(request: QuoteLiquidityRequestType): Promise<QuoteLiquidityResponseType> {
     const poolAddress = Address.parse(request.poolAddress);
     const contract = new DeDustPoolContract(poolAddress);
-    const poolData = await contract.getPoolData(
-      this.chain.rpcProvider.getProvider(poolAddress),
-    );
+    const poolData = await contract.getPoolData(this.chain.rpcProvider.getProvider(poolAddress));
 
     const assetX = poolData.assetX;
     const assetY = poolData.assetY;
@@ -152,9 +161,7 @@ export class DeDustAMM {
 
     const poolAddress = Address.parse(request.poolAddress);
     const contract = new DeDustPoolContract(poolAddress);
-    const poolData = await contract.getPoolData(
-      this.chain.rpcProvider.getProvider(poolAddress),
-    );
+    const poolData = await contract.getPoolData(this.chain.rpcProvider.getProvider(poolAddress));
 
     const assetX = poolData.assetX;
     const assetY = poolData.assetY;
@@ -279,11 +286,13 @@ export class DeDustAMM {
       targetAddress: Address.parse(request.walletAddress),
     });
 
-    const messages = [{
-      address: poolAddress,
-      amount: toNano('0.3'), // Gas
-      payload: payload,
-    }];
+    const messages = [
+      {
+        address: poolAddress,
+        amount: toNano('0.3'), // Gas
+        payload: payload,
+      },
+    ];
 
     const result = await this.chain.sendTransfer(wallet, messages);
     const confirmation = await this.chain.waitForTransactionConfirmation(result.message_hash);
@@ -298,17 +307,19 @@ export class DeDustAMM {
   async claimFees(request: { poolAddress: string; walletAddress: string }): Promise<any> {
     const poolAddress = Address.parse(request.poolAddress);
     const wallet = await this.chain.getWallet(request.walletAddress);
-    
+
     const poolContract = new DeDustPoolContract(poolAddress);
     const payload = poolContract.createClaimFeesPayload({
       excessesTo: Address.parse(request.walletAddress),
     });
 
-    const messages = [{
-      address: poolAddress,
-      amount: toNano('0.2'), // Gas
-      payload: payload,
-    }];
+    const messages = [
+      {
+        address: poolAddress,
+        amount: toNano('0.2'), // Gas
+        payload: payload,
+      },
+    ];
 
     const result = await this.chain.sendTransfer(wallet, messages);
     const confirmation = await this.chain.waitForTransactionConfirmation(result.message_hash);
@@ -322,9 +333,7 @@ export class DeDustAMM {
 
   private getTokenDecimals(address: string): number {
     if (address === 'native') return 9;
-    const token = this.chain.tokenList.find(
-      (t) => t.address.toLowerCase() === address.toLowerCase(),
-    );
+    const token = this.chain.tokenList.find((t) => t.address.toLowerCase() === address.toLowerCase());
     return token ? token.decimals : 9;
   }
 }

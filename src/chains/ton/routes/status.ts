@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
-import { Ton } from '../ton';
+
 import { StatusRequestSchema, StatusResponseType } from '../../../schemas/chain-schema';
+import { Ton } from '../ton';
 
 export const statusRoute: FastifyPluginAsync = async (fastify) => {
   fastify.get<{ Querystring: { network?: string } }>(

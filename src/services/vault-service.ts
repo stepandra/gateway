@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+
 import { logger } from './logger';
 
 const VAULT_ADDR_ENV = 'VAULT_ADDR';

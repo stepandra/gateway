@@ -1,21 +1,22 @@
 import crypto from 'crypto';
-import fse from 'fs-extra';
+
+import { beginCell, external, internal, SendMode, storeMessage } from '@ton/core';
 import { KeyPair, mnemonicToWalletKey, mnemonicValidate } from '@ton/crypto';
 import { WalletContractV5R1 } from '@ton/ton';
-import { beginCell, external, internal, SendMode, storeMessage } from '@ton/core';
+import fse from 'fs-extra';
 
-import { ToncenterService } from './toncenter-service';
-import { TonNetworkConfig, getTonNetworkConfig } from './ton.config';
-import { validateAddress } from './ton.utils';
-import { PollResponseType } from './ton.schema';
-
-import { TokenInfo } from '../../tokens/types';
-import { TokenService } from '../../services/token-service';
-import { logger } from '../../services/logger';
-import { walletPath, sanitizePathComponent } from '../../wallet/utils';
 import { ConfigManagerCertPassphrase } from '../../services/config-manager-cert-passphrase';
 import { ConfigManagerV2 } from '../../services/config-manager-v2';
+import { logger } from '../../services/logger';
+import { TokenService } from '../../services/token-service';
 import { VaultService } from '../../services/vault-service';
+import { TokenInfo } from '../../tokens/types';
+import { walletPath, sanitizePathComponent } from '../../wallet/utils';
+
+import { TonNetworkConfig, getTonNetworkConfig } from './ton.config';
+import { PollResponseType } from './ton.schema';
+import { validateAddress } from './ton.utils';
+import { ToncenterService } from './toncenter-service';
 
 export class TonWallet {
   constructor(

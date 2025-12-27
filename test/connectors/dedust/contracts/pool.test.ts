@@ -1,4 +1,5 @@
 import { Address, beginCell, toNano, Cell, TupleBuilder } from '@ton/core';
+
 import { DeDustPoolContract } from '../../../../src/connectors/dedust/contracts/pool';
 
 // Mock ContractProvider
@@ -28,7 +29,7 @@ describe('DeDustPoolContract', () => {
         amountA: toNano('10'), // TON
         amountB: toNano('50'), // Other token
       });
-      
+
       expect(payload).toBeDefined();
       expect(payload.toBoc().toString('hex')).toMatchSnapshot();
     });
@@ -36,7 +37,7 @@ describe('DeDustPoolContract', () => {
     it('should build Withdraw payload', () => {
       const payload = pool.createWithdrawPayload({
         amount: toNano('10'),
-        targetAddress: Address.parse('EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs')
+        targetAddress: Address.parse('EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs'),
       });
 
       expect(payload).toBeDefined();
@@ -45,7 +46,7 @@ describe('DeDustPoolContract', () => {
 
     it('should build Claim Fees payload', () => {
       const payload = pool.createClaimFeesPayload();
-      
+
       expect(payload).toBeDefined();
       expect(payload.toBoc().toString('hex')).toMatchSnapshot();
     });
@@ -62,10 +63,10 @@ describe('DeDustPoolContract', () => {
         .endCell();
 
       // Mock stack response for get_pool_data
-      // Order: status(int), deposit_active(bool), swap_active(bool), 
-      // assetX(Cell), assetY(Cell), wallets(Cell), assets(Cell), resolutions(Cell), 
+      // Order: status(int), deposit_active(bool), swap_active(bool),
+      // assetX(Cell), assetY(Cell), wallets(Cell), assets(Cell), resolutions(Cell),
       // baseFee(int), reserveX(int), reserveY(int), liquidity(int)
-      
+
       const stack = [
         { type: 'int', value: 2n }, // status: Initialized (2)
         { type: 'int', value: -1n }, // deposit_active: true (-1)

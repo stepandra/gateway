@@ -1,7 +1,8 @@
+import axios from 'axios';
 import { FastifyInstance } from 'fastify';
+
 import { gatewayApp } from '../../../src/app';
 import { DeDust } from '../../../src/connectors/dedust/dedust';
-import axios from 'axios';
 
 // Mock dependencies
 jest.mock('axios');

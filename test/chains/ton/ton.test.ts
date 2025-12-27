@@ -1,10 +1,11 @@
+import { Address, beginCell } from '@ton/core';
+import { WalletContractV5R1 } from '@ton/ton';
+import fse from 'fs-extra';
+
 import { Ton, TonWallet } from '../../../src/chains/ton/ton';
+import { ConfigManagerCertPassphrase } from '../../../src/services/config-manager-cert-passphrase';
 import { ConfigManagerV2 } from '../../../src/services/config-manager-v2';
 import { TokenService } from '../../../src/services/token-service';
-import { ConfigManagerCertPassphrase } from '../../../src/services/config-manager-cert-passphrase';
-import fse from 'fs-extra';
-import { WalletContractV5R1 } from '@ton/ton';
-import { Address, beginCell } from '@ton/core';
 
 jest.mock('../../../src/services/config-manager-v2', () => ({
   ConfigManagerV2: {
@@ -24,9 +25,9 @@ jest.mock('../../../src/services/config-manager-v2', () => ({
 jest.mock('../../../src/services/token-service', () => ({
   TokenService: {
     getInstance: jest.fn().mockReturnValue({
-      loadTokenList: jest.fn().mockResolvedValue([
-        { symbol: 'TON', address: 'native', decimals: 9, name: 'Toncoin', chainId: -239 },
-      ]),
+      loadTokenList: jest
+        .fn()
+        .mockResolvedValue([{ symbol: 'TON', address: 'native', decimals: 9, name: 'Toncoin', chainId: -239 }]),
     }),
   },
 }));
@@ -75,9 +76,9 @@ describe('Ton', () => {
       });
 
       (fse.readFile as jest.Mock).mockResolvedValue(mockEncrypted);
-      
+
       const wallet = await ton.getWallet(address);
-      
+
       expect(wallet).toBeInstanceOf(TonWallet);
       expect(wallet.address).toBe(rawAddress);
       expect(WalletContractV5R1.create).toHaveBeenCalled();
@@ -92,12 +93,10 @@ describe('Ton', () => {
         contract: {
           address: Address.parseRaw('0:ee6f7a03da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da'),
           createTransfer: jest.fn().mockReturnValue(beginCell().endCell()),
-        }
+        },
       } as any;
 
-      const internalMessages = [
-        { address: '0:to', amount: BigInt(1000000), payload: beginCell().endCell() }
-      ];
+      const internalMessages = [{ address: '0:to', amount: BigInt(1000000), payload: beginCell().endCell() }];
 
       (ton.rpcProvider.getWalletSeqno as jest.Mock) = jest.fn().mockResolvedValue(1);
       (ton.rpcProvider.sendMessage as jest.Mock) = jest.fn().mockResolvedValue({ message_hash: 'hash' });
@@ -115,17 +114,15 @@ describe('Ton', () => {
     it('should fetch native and jetton balances', async () => {
       const address = '0:ee6f7a03da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da';
       const tokens = ['TON', 'USDT'];
-      
-      (ton.rpcProvider.getAccountState as jest.Mock) = jest.fn()
-        .mockResolvedValueOnce({ balance: '1000000000' }) // TON
-        .mockResolvedValueOnce({ balance: '5000000' });  // USDT
-      
-      (ton.rpcProvider.getJettonWalletAddress as jest.Mock) = jest.fn()
-        .mockResolvedValue('0:jettonwallet');
 
-      ton.tokenList = [
-        { symbol: 'USDT', address: '0:usdtmaster', decimals: 6, name: 'Tether', chainId: -239 }
-      ];
+      (ton.rpcProvider.getAccountState as jest.Mock) = jest
+        .fn()
+        .mockResolvedValueOnce({ balance: '1000000000' }) // TON
+        .mockResolvedValueOnce({ balance: '5000000' }); // USDT
+
+      (ton.rpcProvider.getJettonWalletAddress as jest.Mock) = jest.fn().mockResolvedValue('0:jettonwallet');
+
+      ton.tokenList = [{ symbol: 'USDT', address: '0:usdtmaster', decimals: 6, name: 'Tether', chainId: -239 }];
 
       const result = await ton.getBalances(address, tokens);
 
@@ -141,4 +138,3 @@ describe('Ton', () => {
     });
   });
 });
-

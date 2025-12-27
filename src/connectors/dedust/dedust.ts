@@ -1,10 +1,12 @@
-import axios from 'axios';
 import { Cell } from '@ton/core';
+import axios from 'axios';
+
 import { Ton } from '../../chains/ton/ton';
-import { DeDustConfig, getDeDustConfig } from './dedust.config';
 import { isRawAddress, validateAddress, parseUnits } from '../../chains/ton/ton.utils';
-import { logger } from '../../services/logger';
 import { httpErrors } from '../../services/error-handler';
+import { logger } from '../../services/logger';
+
+import { DeDustConfig, getDeDustConfig } from './dedust.config';
 
 export class DeDust {
   private static _instances: { [name: string]: DeDust } = {};
@@ -43,8 +45,7 @@ export class DeDust {
 
     try {
       return validateAddress(symbolOrAddress);
-    } catch {
-    }
+    } catch {}
 
     throw new Error(`Token not found: ${symbolOrAddress}`);
   }
