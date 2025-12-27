@@ -1,0 +1,3 @@
+router:
+  slippage: 0.5
+  baseUrl: https://api-mainnet.dedust.io/v1

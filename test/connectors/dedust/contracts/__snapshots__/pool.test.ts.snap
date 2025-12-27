@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeDustPoolContract Payload Builders should build Claim Fees payload 1`] = `"b5ee9c7241010101000f0000195652f1df0000000000000000206d9a306f"`;
+
+exports[`DeDustPoolContract Payload Builders should build PayNative payload (Deposit TON) 1`] = `"b5ee9c7241010301002f000223a5a7cbf80000000000000000502540be400801020023c9a015da502540be40050ba43b7400000008000500000882a7efa0"`;
+
+exports[`DeDustPoolContract Payload Builders should build Withdraw payload 1`] = `"b5ee9c7241010201003b00012520b5ef890000000000000000502540be40000c010045801622753296a04942ce33ed2272651d6eb2b2d87144beb2051628dfd9b86c43bfc010a7f0204c"`;
