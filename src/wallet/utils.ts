@@ -3,6 +3,7 @@ import fse from 'fs-extra';
 
 import { Ethereum } from '../chains/ethereum/ethereum';
 import { Solana } from '../chains/solana/solana';
+import { Ton } from '../chains/ton/ton';
 import { updateDefaultWallet } from '../config/utils';
 import { ConfigManagerCertPassphrase } from '../services/config-manager-cert-passphrase';
 import {
@@ -43,7 +44,7 @@ export function validateChainName(chain: string): boolean {
   } catch (error) {
     // Fallback to hardcoded list if there's an error
     logger.warn(`Failed to get supported chains: ${error.message}. Using fallback list.`);
-    return ['ethereum', 'solana'].includes(chain.toLowerCase());
+    return ['ethereum', 'solana', 'ton'].includes(chain.toLowerCase());
   }
 }
 
@@ -111,6 +112,11 @@ export async function addWallet(fastify: FastifyInstance, req: AddWalletRequest)
       // Further validate Solana address
       address = Solana.validateAddress(address);
       encryptedPrivateKey = await connection.encrypt(req.privateKey, passphrase);
+    } else if (connection instanceof Ton) {
+      const wallet = await (connection as Ton).getWalletFromPrivateKey(req.privateKey);
+      address = wallet.address;
+      address = Ton.validateAddress(address);
+      encryptedPrivateKey = await connection.encrypt(req.privateKey, passphrase);
     }
 
     if (address === undefined || encryptedPrivateKey === undefined) {
@@ -155,6 +161,8 @@ export async function removeWallet(fastify: FastifyInstance, req: RemoveWalletRe
       validatedAddress = Ethereum.validateAddress(req.address);
     } else if (req.chain.toLowerCase() === 'solana') {
       validatedAddress = Solana.validateAddress(req.address);
+    } else if (req.chain.toLowerCase() === 'ton') {
+      validatedAddress = Ton.validateAddress(req.address);
     } else {
       // This should not happen due to validateChainName check, but just in case
       throw new Error(`Unsupported chain: ${req.chain}`);
@@ -188,6 +196,8 @@ export async function signMessage(fastify: FastifyInstance, req: SignMessageRequ
       validatedAddress = Ethereum.validateAddress(req.address);
     } else if (req.chain.toLowerCase() === 'solana') {
       validatedAddress = Solana.validateAddress(req.address);
+    } else if (req.chain.toLowerCase() === 'ton') {
+      validatedAddress = Ton.validateAddress(req.address);
     } else {
       throw new Error(`Unsupported chain: ${req.chain}`);
     }
@@ -246,7 +256,7 @@ export async function getWallets(
     await mkdirIfDoesNotExist(walletPath);
 
     // Get only valid chain directories
-    const validChains = ['ethereum', 'solana'];
+    const validChains = ['ethereum', 'solana', 'ton'];
     const allDirs = await getDirectories(walletPath);
     const chains = allDirs.filter((dir) => validChains.includes(dir.toLowerCase()));
 
@@ -268,6 +278,10 @@ export async function getWallets(
             } else if (chain.toLowerCase() === 'solana') {
               // Basic Solana address length check
               return address.length >= 32 && address.length <= 44;
+            } else if (chain.toLowerCase() === 'ton') {
+              // Basic TON raw address validation (0: + 64 hex chars)
+              // Note: Files are saved with sanitized names (colons removed), so we check for optional colon
+              return /^[-0-1]:?[a-fA-F0-9]{64}$/.test(address);
             }
             return false;
           } catch {

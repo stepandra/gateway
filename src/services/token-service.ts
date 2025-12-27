@@ -228,6 +228,19 @@ export class TokenService {
         }
         break;
 
+      case SupportedChain.TON:
+        try {
+          // Validate TON address format (simple regex check for now as we don't have TON libs imported here yet)
+          // We can't easily import @ton/core here without potentially causing circular deps or large imports
+          // So we use the regex from src/chains/ton/ton.utils.ts
+          if (token.address !== 'native' && !/^[-0-1]:[a-fA-F0-9]{64}$/.test(token.address)) {
+             throw new Error('Invalid TON raw address');
+          }
+        } catch (error) {
+          throw new Error(`Invalid TON address: ${error.message}`);
+        }
+        break;
+
       default:
         throw new Error(`Unsupported chain for validation: ${chain}`);
     }

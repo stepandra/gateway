@@ -20,3 +20,8 @@ coingecko: ''
 # Get your API key from https://etherscan.io/myapikey
 # Works for all Etherscan V2 API supported chains
 etherscan: ''
+
+# Toncenter - TON RPC provider
+# Get your API key from https://toncenter.com/
+# Required for TON mainnet interactions
+toncenter: '0c4ecbe966bd5469eb2752ac6894a58c5e60d54096dc4f54c2ec8941ad5fea53'

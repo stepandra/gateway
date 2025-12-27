@@ -1,11 +1,12 @@
 import { Ethereum } from '../chains/ethereum/ethereum';
 import { Solana } from '../chains/solana/solana';
+import { Ton } from '../chains/ton/ton';
 
 export interface Chain {
   // TODO: Add shared chain properties (e.g., network, chainId, etc.)
 }
 
-export type ChainInstance = Ethereum | Solana;
+export type ChainInstance = Ethereum | Solana | Ton;
 
 export class UnsupportedChainException extends Error {
   constructor(message?: string) {
@@ -32,7 +33,7 @@ export async function getInitializedChain<_T>(chain: string, network: string): P
  */
 export function getSupportedChains(): string[] {
   // These should match the chains in getChainInstance
-  return ['ethereum', 'solana'];
+  return ['ethereum', 'solana', 'ton'];
 }
 
 export async function getChainInstance(chain: string, network: string): Promise<ChainInstance | undefined> {
@@ -43,6 +44,8 @@ export async function getChainInstance(chain: string, network: string): Promise<
     connection = await Ethereum.getInstance(network);
   } else if (chainLower === 'solana') {
     connection = await Solana.getInstance(network);
+  } else if (chainLower === 'ton') {
+    connection = await Ton.getInstance(network);
   } else {
     connection = undefined;
   }

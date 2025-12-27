@@ -1,0 +1,6 @@
+network: mainnet
+rpcProvider: toncenter
+nodeURL: https://toncenter.com
+commissionBuffer: 0.3
+chainID: -239
+nativeCurrencySymbol: TON

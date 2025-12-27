@@ -96,3 +96,17 @@ configurations:
   $namespace apiKeys:
     configurationPath: apiKeys.yml
     schemaPath: apiKeys-schema.json
+
+  # TON configurations
+  $namespace ton:
+    configurationPath: chains/ton.yml
+    schemaPath: ton-chain-schema.json
+
+  $namespace ton-mainnet:
+    configurationPath: chains/ton/mainnet.yml
+    schemaPath: ton-network-schema.json
+
+  # TON connectors
+  $namespace dedust:
+    configurationPath: connectors/dedust.yml
+    schemaPath: dedust-schema.json

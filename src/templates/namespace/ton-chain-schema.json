@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "defaultNetwork": {
+      "type": "string",
+      "description": "Default network for TON operations"
+    },
+    "defaultWallet": {
+      "type": "string",
+      "description": "Default wallet address for examples and testing"
+    },
+    "rpcProvider": {
+      "type": "string",
+      "enum": ["url", "toncenter"],
+      "default": "url",
+      "description": "RPC provider to use: 'url' for standard nodeURL from network config, 'toncenter' for Toncenter service"
+    }
+  },
+  "required": ["defaultNetwork"],
+  "additionalProperties": false
+}

@@ -30,10 +30,15 @@ export const mockConfigStorage: Record<string, any> = {
   // Ethereum configurations
   'ethereum-mainnet.nodeURL': 'https://mainnet.infura.io/v3/test',
   'ethereum-mainnet.nativeCurrencySymbol': 'ETH',
-  'ethereum-goerli.nodeURL': 'https://goerli.infura.io/v3/test',
-  'ethereum-goerli.nativeCurrencySymbol': 'ETH',
-  // Connector configurations
-  'jupiter.slippagePct': 1,
+      'ethereum-goerli.nodeURL': 'https://goerli.infura.io/v3/test',
+      'ethereum-goerli.nativeCurrencySymbol': 'ETH',
+      // TON configurations
+      'ton-mainnet.nodeURL': 'https://toncenter.com',
+      'ton-mainnet.nativeCurrencySymbol': 'TON',
+      'ton-mainnet.rpcProvider': 'toncenter',
+      'ton-mainnet.chainID': -239,
+      'ton-mainnet.commissionBuffer': 0.3,
+      // Connector configurations  'jupiter.slippagePct': 1,
   'jupiter.priorityLevel': 'medium',
   'jupiter.apiKey': undefined,
   'meteora.slippagePct': 1,
@@ -56,6 +61,7 @@ export const mockConfigManagerV2 = {
       'ethereum-goerli': {},
       'solana-mainnet-beta': {},
       'solana-devnet': {},
+      'ton-mainnet': {},
       uniswap: {},
       jupiter: {},
       meteora: {},
@@ -142,6 +148,11 @@ export const mockEthereumChainConfig = {
   rpcProvider: 'url',
 };
 
+export const mockTonChainConfig = {
+  defaultNetwork: 'mainnet',
+  rpcProvider: 'toncenter',
+};
+
 // Setup all common mocks
 export function setupCommonMocks(options: { skipLogger?: boolean } = {}) {
   // Mock logger only if not skipped
@@ -175,6 +186,11 @@ export function setupCommonMocks(options: { skipLogger?: boolean } = {}) {
   jest.mock('../../src/chains/ethereum/ethereum.config', () => ({
     ...jest.requireActual('../../src/chains/ethereum/ethereum.config'),
     getEthereumChainConfig: jest.fn().mockReturnValue(mockEthereumChainConfig),
+  }));
+
+  jest.mock('../../src/chains/ton/ton.config', () => ({
+    ...jest.requireActual('../../src/chains/ton/ton.config'),
+    getTonChainConfig: jest.fn().mockReturnValue(mockTonChainConfig),
   }));
 
   // Mock fs for token lists

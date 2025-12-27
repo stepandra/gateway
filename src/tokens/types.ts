@@ -40,9 +40,13 @@ export type TokenFileFormat = Token[];
 export enum SupportedChain {
   ETHEREUM = 'ethereum',
   SOLANA = 'solana',
+  TON = 'ton',
 }
 
 // Chain validation
 export function isSupportedChain(chain: string): chain is SupportedChain {
   return Object.values(SupportedChain).includes(chain as SupportedChain);
 }
+
+// TokenInfo is an alias for Token (for backward compatibility across chains)
+export type TokenInfo = Token;
