@@ -54,6 +54,12 @@ export class Ton {
   }
 
   private async getApiKey(): Promise<string> {
+    const envKey = process.env.TONCENTER_API_KEY?.trim();
+    if (envKey) {
+      logger.info('🔑 Using Toncenter API key from env');
+      return envKey;
+    }
+
     const vault = VaultService.getInstance();
     if (vault.enabled) {
       const vaultKey = await vault.getApiKey('toncenter');
