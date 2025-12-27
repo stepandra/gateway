@@ -54,6 +54,9 @@ Gateway may be used alongside the main [Hummingbot client](https://github.com/hu
 - Solana Mainnet-Beta
 - Solana Devnet
 
+### TON Networks
+- TON Mainnet
+
 ### RPC Provider Integration
 
 Gateway includes optimized RPC provider abstractions for improved performance and reliability:
@@ -70,6 +73,11 @@ Gateway includes optimized RPC provider abstractions for improved performance an
 - **Configuration**: Set `rpcProvider: helius` in network configs and configure API key in `conf/rpc/helius.yml`
 - **Benefits**: Real-time transaction monitoring, optimized transaction sending, connection warming
 
+#### **Toncenter (TON Networks)**
+- **Networks Supported**: TON Mainnet
+- **Features**: API v3 integration, reliable mainnet access
+- **Configuration**: Set `rpcProvider: toncenter` in network configs and configure API key in `conf/apiKeys.yml` under `toncenter` key.
+
 Both RPC providers maintain full backward compatibility - networks default to standard RPC endpoints when provider-specific configurations are not available.
 
 ### Supported DEX Protocols
@@ -80,6 +88,7 @@ Both RPC providers maintain full backward compatibility - networks default to st
 | Meteora | Solana | ❌ | ❌ | ✅ | Dynamic Liquidity Market Maker (DLMM) |
 | PancakeSwap (Solana) | Solana | ❌ | ❌ | ✅ | V3 concentrated liquidity pools with single-sided positions |
 | Raydium | Solana | ❌ | ✅ | ✅ | Full-featured DEX with V2 AMM and V3 CLMM |
+| DeDust | TON | ✅ | ❌ | ❌ | Major DEX on TON blockchain (Router API) |
 | PancakeSwap | Ethereum/EVM | ✅ | ✅ | ✅ | Multi-chain DEX with V2 AMM, V3 CLMM, and Smart Router |
 | Uniswap | Ethereum/EVM | ✅ | ✅ | ✅ | Complete V2 AMM, V3 CLMM, and Smart Order Router |
 | 0x | Ethereum/EVM | ✅ | ❌ | ❌ | DEX aggregator with professional market making features |
