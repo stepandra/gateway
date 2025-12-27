@@ -53,6 +53,8 @@ const devMode = process.argv.includes('--dev') || process.env.GATEWAY_TEST_MODE 
 // Promisify exec for async/await usage
 const execPromise = promisify(exec);
 
+const swaggerServerUrl = process.env.SWAGGER_BASE_URL || '/';
+
 const swaggerOptions = {
   openapi: {
     info: {
@@ -62,7 +64,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://localhost:${ConfigManagerV2.getInstance().get('server.port')}`,
+        url: swaggerServerUrl,
       },
     ],
     tags: [
