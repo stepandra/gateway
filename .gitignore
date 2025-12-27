@@ -25,3 +25,10 @@ src/**/*.js.map
 
 # MCP servers configuration
 .mcp.json
+# Agent context files (not for git)
+/ex/
+/conductor/
+/.gemini-clipboard/
+NetrwTreeListing
+session-*.md
+dedust_amm_plan.md
