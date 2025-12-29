@@ -77,6 +77,12 @@ export const connectorsConfig = [
     chain: OrcaConfig.chain,
     networks: [...OrcaConfig.networks],
   },
+  {
+    name: 'dedust',
+    trading_types: ['amm', 'router'],
+    chain: 'ton',
+    networks: ['mainnet'],
+  },
 ];
 
 export const getConnectorsRoute: FastifyPluginAsync = async (fastify) => {
