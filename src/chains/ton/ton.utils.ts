@@ -1,8 +1,23 @@
 import { Address } from '@ton/core';
 
+function normalizeRawAddress(address: string): string {
+  const trimmed = address.trim();
+  if (/^(-1|0|1):[a-fA-F0-9]{64}$/.test(trimmed)) {
+    return trimmed;
+  }
+  if (/^(-1|0|1)[a-fA-F0-9]{64}$/.test(trimmed)) {
+    if (trimmed.startsWith('-1')) {
+      return `-1:${trimmed.slice(2)}`;
+    }
+    return `${trimmed[0]}:${trimmed.slice(1)}`;
+  }
+  return trimmed;
+}
+
 export function validateAddress(address: string): string {
   try {
-    const addr = Address.parse(address);
+    const normalized = normalizeRawAddress(address);
+    const addr = Address.parse(normalized);
     return addr.toRawString();
   } catch (error) {
     throw new Error(`Invalid TON address: ${address}`);

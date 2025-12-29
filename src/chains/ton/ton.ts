@@ -261,9 +261,10 @@ export class Ton {
 
   async getBalances(address: string, tokens?: string[]): Promise<Record<string, number>> {
     const balances: Record<string, number> = {};
+    const validatedAddress = Ton.validateAddress(address);
 
     try {
-      const accountState = await this.rpcProvider.getAccountState(address);
+      const accountState = await this.rpcProvider.getAccountState(validatedAddress);
       balances[this.nativeTokenSymbol] = Number(BigInt(accountState.balance || '0')) / 1e9;
     } catch (error) {
       logger.warn(`Failed to fetch native balance for ${address}: ${error}`);
@@ -277,7 +278,7 @@ export class Ton {
           const token = this.tokenList.find((t) => t.symbol === symbolOrAddress || t.address === symbolOrAddress);
           if (token && token.address !== 'native') {
             try {
-              const jettonWalletAddress = await this.rpcProvider.getJettonWalletAddress(token.address, address);
+              const jettonWalletAddress = await this.rpcProvider.getJettonWalletAddress(token.address, validatedAddress);
               const jettonBalance = await this.rpcProvider.getJettonBalance(jettonWalletAddress);
               return { symbol: token.symbol, balance: Number(jettonBalance) / Math.pow(10, token.decimals) };
             } catch (error) {
