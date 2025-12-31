@@ -2,6 +2,7 @@ import sensible from '@fastify/sensible';
 import { FastifyPluginAsync } from 'fastify';
 
 import { balancesRoute } from './routes/balances';
+import { estimateGasRoute } from './routes/estimate-gas';
 import { pollRoute } from './routes/poll';
 import { statusRoute } from './routes/status';
 import { tokensRoute } from './routes/tokens';
@@ -11,6 +12,7 @@ export const tonRoutes: FastifyPluginAsync = async (fastify) => {
 
   fastify.register(statusRoute);
   fastify.register(balancesRoute);
+  fastify.register(estimateGasRoute);
   fastify.register(tokensRoute);
   fastify.register(pollRoute);
 };
