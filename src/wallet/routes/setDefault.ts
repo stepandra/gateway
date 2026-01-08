@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 
 import { Ethereum } from '../../chains/ethereum/ethereum';
 import { Solana } from '../../chains/solana/solana';
+import { Ton } from '../../chains/ton/ton';
 import { updateDefaultWallet } from '../../config/utils';
 import { logger } from '../../services/logger';
 import {
@@ -30,6 +31,11 @@ export const setDefaultRoute: FastifyPluginAsync = async (fastify) => {
               chain: 'solana',
               address: '7UX2i7SucgLMQcfZ75s3VXmZZY4YRUyJN9X1RgfMoDUi',
             },
+            {
+              chain: 'ton',
+              // Accepts raw (0:<64-hex>) or user-friendly (EQ...) formats; stored normalized.
+              address: '0:ee6f7a03da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da',
+            },
           ],
         },
         response: {
@@ -54,6 +60,8 @@ export const setDefaultRoute: FastifyPluginAsync = async (fastify) => {
           validatedAddress = Ethereum.validateAddress(address);
         } else if (chain.toLowerCase() === 'solana') {
           validatedAddress = Solana.validateAddress(address);
+        } else if (chain.toLowerCase() === 'ton') {
+          validatedAddress = Ton.validateAddress(address);
         } else {
           throw new Error(`Unsupported chain: ${chain}`);
         }

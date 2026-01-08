@@ -11,6 +11,33 @@ export interface ToncenterMessageResponse {
 export class ToncenterService {
   private readonly axios: AxiosInstance;
 
+  private normalizeRawAddress(address: string): string {
+    const trimmed = address.trim();
+    if (/^(-1|0|1):[a-fA-F0-9]{64}$/.test(trimmed)) {
+      return trimmed;
+    }
+    // Support raw format without ':' (e.g. 0<64-hex> or -1<64-hex>)
+    if (/^(-1|0|1)[a-fA-F0-9]{64}$/.test(trimmed)) {
+      if (trimmed.startsWith('-1')) {
+        return `-1:${trimmed.slice(2)}`;
+      }
+      return `${trimmed[0]}:${trimmed.slice(1)}`;
+    }
+    return trimmed;
+  }
+
+  private normalizeAddress(address: string | Address): string {
+    try {
+      if (typeof address === 'string') {
+        return Address.parse(this.normalizeRawAddress(address)).toRawString();
+      }
+      return address.toRawString();
+    } catch {
+      const raw = typeof address === 'string' ? address : address.toString();
+      throw new Error(`Invalid TON address: ${raw}`);
+    }
+  }
+
   constructor(
     private readonly baseUrl: string,
     private readonly apiKey: string,
@@ -28,9 +55,17 @@ export class ToncenterService {
     const url = '/api/v3/message';
     try {
       const response = await this.axios.post(url, { boc });
+      const data = response.data;
+      // Toncenter responses have been observed in different shapes; support both.
+      const message_hash = data?.message_hash ?? data?.result?.hash;
+      const message_hash_norm = data?.message_hash_norm ?? data?.result?.hash_norm;
+
+      if (!message_hash) {
+        throw new Error(`Toncenter API response missing message hash: ${JSON.stringify(data)}`);
+      }
       return {
-        message_hash: response.data.message_hash,
-        message_hash_norm: response.data.message_hash_norm,
+        message_hash,
+        message_hash_norm: message_hash_norm ?? message_hash,
       };
     } catch (error: any) {
       if (error.response) {
@@ -116,7 +151,8 @@ export class ToncenterService {
     const url = '/api/v3/account';
     try {
       const response = await this.axios.get(url, {
-        params: { address },
+        // Toncenter API v3 is strict about address parsing; always use raw form.
+        params: { address: this.normalizeAddress(address) },
       });
       return response.data;
     } catch (error: any) {
@@ -142,7 +178,8 @@ export class ToncenterService {
     const url = '/api/v3/runGetMethod';
     try {
       const response = await this.axios.post(url, {
-        address,
+        // Toncenter API v3 expects a parseable TON address; normalize input.
+        address: this.normalizeAddress(address),
         method,
         stack,
       });
@@ -156,13 +193,13 @@ export class ToncenterService {
   }
 
   async getJettonWalletAddress(masterAddress: string, ownerAddress: string): Promise<string> {
-    const owner = Address.parse(ownerAddress);
+    const owner = Address.parse(this.normalizeAddress(ownerAddress));
     const stack = [{ type: 'slice', value: beginCell().storeAddress(owner).endCell().toBoc().toString('base64') }];
-    const result = await this.runGetMethod(masterAddress, 'get_wallet_address', stack);
+    const result = await this.runGetMethod(this.normalizeAddress(masterAddress), 'get_wallet_address', stack);
 
     const sliceBoc = result.stack[0].value;
     const address = Cell.fromBase64(sliceBoc).beginParse().loadAddress();
-    return address.toString();
+    return address.toRawString();
   }
 
   async getJettonBalance(jettonWalletAddress: string): Promise<bigint> {
@@ -187,7 +224,7 @@ export class ToncenterService {
           }
           throw new Error(`Unsupported type for runGetMethod: ${item.type}`);
         });
-        const result = await this.runGetMethod(address.toString(), name.toString(), stack);
+        const result = await this.runGetMethod(address.toRawString(), name.toString(), stack);
         return {
           stack: new TupleReader(
             result.stack.map((item: any) => {
@@ -222,7 +259,7 @@ export class ToncenterService {
         throw new Error('Method not implemented.');
       },
       getState: async () => {
-        const state = await this.getAccountState(address.toString());
+        const state = await this.getAccountState(address.toRawString());
         return {
           balance: BigInt(state.balance || '0'),
           last: null,

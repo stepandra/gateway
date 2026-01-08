@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Address } from '@ton/core';
 
 import { ToncenterService } from '../../../src/chains/ton/toncenter-service';
 
@@ -107,6 +108,20 @@ describe('ToncenterService', () => {
       const result = await service.transactionsByMessage(msgHash);
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getProvider', () => {
+    it('should call runGetMethod with raw address (toRawString) for ContractProvider.get', async () => {
+      const rawAddr = '0:ee6f7a03da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da3da';
+      const addr = Address.parse(rawAddr);
+
+      const runGetSpy = jest.spyOn(service, 'runGetMethod').mockResolvedValue({ stack: [] } as any);
+
+      const provider = service.getProvider(addr);
+      await provider.get('test_method' as any, [] as any);
+
+      expect(runGetSpy).toHaveBeenCalledWith(addr.toRawString(), 'test_method', []);
     });
   });
 });
