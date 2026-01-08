@@ -121,7 +121,7 @@ const swaggerOptions = {
         description: 'TON chain endpoints',
       },
       {
-        name: '/connectors/dedust',
+        name: '/connector/dedust',
         description: 'DeDust DEX connector endpoints',
       },
     ],
@@ -260,8 +260,8 @@ const configureGatewayServer = () => {
 
     // Register DEX connector routes - organized by connector
 
-    app.register(dedustRoutes, { prefix: '/connectors/dedust/router' });
-    app.register(dedustAmmRoutes, { prefix: '/connectors/dedust/amm' });
+    app.register(dedustRoutes, { prefix: '/connector/dedust/router' });
+    app.register(dedustAmmRoutes, { prefix: '/connector/dedust/amm' });
 
     // Jupiter routes
     app.register(jupiterRoutes.router, {

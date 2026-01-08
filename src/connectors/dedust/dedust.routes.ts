@@ -66,7 +66,7 @@ export const dedustRoutes: FastifyPluginAsync = async (fastify) => {
   const quoteSchema = {
     schema: {
       body: QuoteSwapRequest,
-      tags: ['/connectors/dedust'],
+      tags: ['/connector/dedust'],
       description: 'Get DeDust swap quote',
       response: {
         200: QuoteSwapResponse,
@@ -83,7 +83,7 @@ export const dedustRoutes: FastifyPluginAsync = async (fastify) => {
     {
       schema: {
         querystring: QuoteSwapRequest,
-        tags: ['/connectors/dedust'],
+        tags: ['/connector/dedust'],
         description: 'Get DeDust swap quote (hummingbot-api compatible)',
         response: {
           200: QuoteSwapResponse,
@@ -153,7 +153,7 @@ export const dedustRoutes: FastifyPluginAsync = async (fastify) => {
   const swapSchema = {
     schema: {
       body: DeDustExecuteSwapRequest,
-      tags: ['/connectors/dedust'],
+      tags: ['/connector/dedust'],
       description: 'Execute DeDust swap',
       response: {
         200: SwapExecuteResponse,
@@ -177,7 +177,7 @@ export const dedustRoutes: FastifyPluginAsync = async (fastify) => {
           address: Type.String({ description: 'Wallet address' }),
           quoteId: Type.String({ description: 'Serialized quote from /quote-swap' }),
         }),
-        tags: ['/connectors/dedust'],
+        tags: ['/connector/dedust'],
         description: 'Execute a previously obtained quote',
         response: {
           200: SwapExecuteResponse,
