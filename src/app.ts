@@ -116,6 +116,14 @@ const swaggerOptions = {
         name: '/connector/pancakeswap',
         description: 'PancakeSwap EVM connector endpoints',
       },
+      {
+        name: '/chain/ton',
+        description: 'TON chain endpoints',
+      },
+      {
+        name: '/connector/dedust',
+        description: 'DeDust DEX connector endpoints',
+      },
     ],
     components: {
       parameters: {
