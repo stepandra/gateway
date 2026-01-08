@@ -17,8 +17,8 @@
 - Проверять endpoints только для TON и DeDust:
   - `/chains/ton/status`
   - `/chains/ton/balances`
-  - `/connectors/dedust/router/quote*`
-  - `/connectors/dedust/router/swap*`
+  - `/connector/dedust/router/quote*`
+  - `/connector/dedust/router/swap*`
 
 ### Tests (запускать только релевантные)
 Предпочтительно (точечно по файлам/папкам):

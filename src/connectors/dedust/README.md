@@ -6,12 +6,12 @@ The DeDust connector supports full AMM functionality strictly following the Humm
 
 ### Endpoints
 
-- `GET /connectors/dedust/amm/pool-info`: Fetch pool reserves, fees, and liquidity.
-- `GET /connectors/dedust/amm/position-info`: Fetch user LP balance and share of reserves.
-- `GET /connectors/dedust/amm/quote-liquidity`: Calculate required token amounts for adding liquidity.
-- `POST /connectors/dedust/amm/add-liquidity`: Add liquidity to a pool (supports TON/Jetton and Jetton/Jetton).
-- `POST /connectors/dedust/amm/remove-liquidity`: Remove liquidity and burn LP tokens.
-- `POST /connectors/dedust/amm/claim-fees`: Claim accumulated trading fees from a pool.
+- `GET /connector/dedust/amm/pool-info`: Fetch pool reserves, fees, and liquidity.
+- `GET /connector/dedust/amm/position-info`: Fetch user LP balance and share of reserves.
+- `GET /connector/dedust/amm/quote-liquidity`: Calculate required token amounts for adding liquidity.
+- `POST /connector/dedust/amm/add-liquidity`: Add liquidity to a pool (supports TON/Jetton and Jetton/Jetton).
+- `POST /connector/dedust/amm/remove-liquidity`: Remove liquidity and burn LP tokens.
+- `POST /connector/dedust/amm/claim-fees`: Claim accumulated trading fees from a pool.
 
 ## Transaction Confirmation Flow
 
@@ -19,7 +19,7 @@ The DeDust connector implements an intelligent transaction confirmation flow for
 
 ### How it works
 
-When you call `/connectors/dedust/swap`, the gateway performs the following steps:
+When you call `/connector/dedust/swap`, the gateway performs the following steps:
 
 1.  **Submission**: Sends the transaction to the TON network via Toncenter.
 2.  **Verification**: Polls for transaction confirmation using:

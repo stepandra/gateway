@@ -32,7 +32,7 @@ describe('DeDust AMM Routes', () => {
     mockDeDustAmm = DeDustAMM.getInstance('mainnet');
   });
 
-  it('GET /connectors/dedust/amm/pool-info should return pool info', async () => {
+  it('GET /connector/dedust/amm/pool-info should return pool info', async () => {
     mockDeDustAmm.poolInfo.mockResolvedValue({
       address: 'EQA-pool',
       baseTokenAddress: 'native',
@@ -45,7 +45,7 @@ describe('DeDust AMM Routes', () => {
 
     const response = await app.inject({
       method: 'GET',
-      url: '/connectors/dedust/amm/pool-info',
+      url: '/connector/dedust/amm/pool-info',
       query: {
         network: 'mainnet',
         poolAddress: 'EQA-pool',
@@ -58,7 +58,7 @@ describe('DeDust AMM Routes', () => {
     expect(mockDeDustAmm.poolInfo).toHaveBeenCalled();
   });
 
-  it('POST /connectors/dedust/amm/add-liquidity should initiate deposit', async () => {
+  it('POST /connector/dedust/amm/add-liquidity should initiate deposit', async () => {
     mockDeDustAmm.addLiquidity.mockResolvedValue({
       signature: 'tx_hash',
       status: 1,
@@ -66,7 +66,7 @@ describe('DeDust AMM Routes', () => {
 
     const response = await app.inject({
       method: 'POST',
-      url: '/connectors/dedust/amm/add-liquidity',
+      url: '/connector/dedust/amm/add-liquidity',
       body: {
         network: 'mainnet',
         walletAddress: 'UQ...wallet',
@@ -82,7 +82,7 @@ describe('DeDust AMM Routes', () => {
     expect(mockDeDustAmm.addLiquidity).toHaveBeenCalled();
   });
 
-  it('POST /connectors/dedust/amm/remove-liquidity should initiate withdrawal', async () => {
+  it('POST /connector/dedust/amm/remove-liquidity should initiate withdrawal', async () => {
     mockDeDustAmm.removeLiquidity.mockResolvedValue({
       signature: 'tx_hash',
       status: 1,
@@ -90,7 +90,7 @@ describe('DeDust AMM Routes', () => {
 
     const response = await app.inject({
       method: 'POST',
-      url: '/connectors/dedust/amm/remove-liquidity',
+      url: '/connector/dedust/amm/remove-liquidity',
       body: {
         network: 'mainnet',
         walletAddress: 'UQ...wallet',
@@ -103,7 +103,7 @@ describe('DeDust AMM Routes', () => {
     expect(mockDeDustAmm.removeLiquidity).toHaveBeenCalled();
   });
 
-  it('GET /connectors/dedust/amm/position-info should return position info', async () => {
+  it('GET /connector/dedust/amm/position-info should return position info', async () => {
     mockDeDustAmm.positionInfo.mockResolvedValue({
       poolAddress: 'EQA-pool',
       walletAddress: 'UQ...wallet',
@@ -117,7 +117,7 @@ describe('DeDust AMM Routes', () => {
 
     const response = await app.inject({
       method: 'GET',
-      url: '/connectors/dedust/amm/position-info',
+      url: '/connector/dedust/amm/position-info',
       query: {
         network: 'mainnet',
         poolAddress: 'EQA-pool',

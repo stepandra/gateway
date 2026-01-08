@@ -22,7 +22,7 @@ export const dedustAmmRoutes: FastifyPluginAsync = async (gatewayApp: FastifyIns
     {
       schema: {
         description: 'Get pool information for DeDust AMM',
-        tags: ['/connectors/dedust'],
+        tags: ['/connector/dedust'],
         querystring: GetPoolInfoRequest,
         response: {
           200: PoolInfoSchema,
@@ -41,7 +41,7 @@ export const dedustAmmRoutes: FastifyPluginAsync = async (gatewayApp: FastifyIns
     {
       schema: {
         description: 'Add liquidity to a DeDust AMM pool',
-        tags: ['/connectors/dedust'],
+        tags: ['/connector/dedust'],
         body: AddLiquidityRequest,
         response: {
           200: AddLiquidityResponse,
@@ -60,7 +60,7 @@ export const dedustAmmRoutes: FastifyPluginAsync = async (gatewayApp: FastifyIns
     {
       schema: {
         description: 'Remove liquidity from a DeDust AMM pool',
-        tags: ['/connectors/dedust'],
+        tags: ['/connector/dedust'],
         body: RemoveLiquidityRequest,
         response: {
           200: RemoveLiquidityResponse,
@@ -79,7 +79,7 @@ export const dedustAmmRoutes: FastifyPluginAsync = async (gatewayApp: FastifyIns
     {
       schema: {
         description: 'Get position information for a wallet in DeDust AMM',
-        tags: ['/connectors/dedust'],
+        tags: ['/connector/dedust'],
         querystring: GetPositionInfoRequest,
         response: {
           200: PositionInfoSchema,
@@ -98,7 +98,7 @@ export const dedustAmmRoutes: FastifyPluginAsync = async (gatewayApp: FastifyIns
     {
       schema: {
         description: 'Get a liquidity quote for DeDust AMM',
-        tags: ['/connectors/dedust'],
+        tags: ['/connector/dedust'],
         querystring: QuoteLiquidityRequest,
         response: {
           200: QuoteLiquidityResponse,
@@ -117,7 +117,7 @@ export const dedustAmmRoutes: FastifyPluginAsync = async (gatewayApp: FastifyIns
     {
       schema: {
         description: 'Claim accumulated fees from a DeDust AMM pool',
-        tags: ['/connectors/dedust'],
+        tags: ['/connector/dedust'],
         body: Type.Object({
           network: Type.Optional(Type.String()),
           walletAddress: Type.String(),

@@ -80,8 +80,8 @@
 
 ### 3.2 Gateway endpoints (Router)
 
-* `POST /connectors/dedust/router/quote`
-* `POST /connectors/dedust/router/swap`
+* `POST /connector/dedust/router/quote`
+* `POST /connector/dedust/router/swap`
 
 ### 3.3 Token mapping
 

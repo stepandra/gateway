@@ -120,7 +120,7 @@ describe('DeDust E2E (Simulated)', () => {
 
     const response = await fastify.inject({
       method: 'POST',
-      url: '/connectors/dedust/router/swap',
+      url: '/connector/dedust/router/swap',
       payload: {
         chain: 'ton',
         network: 'mainnet',
@@ -164,7 +164,7 @@ describe('DeDust E2E (Simulated)', () => {
     mockRpcAxiosGet.mockImplementation(() => Promise.resolve({ data: { actions: [], transactions: [] } }));
     const response = await fastify.inject({
       method: 'POST',
-      url: '/connectors/dedust/router/swap',
+      url: '/connector/dedust/router/swap',
       payload: {
         chain: 'ton',
         network: 'mainnet',

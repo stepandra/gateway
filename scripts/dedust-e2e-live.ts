@@ -42,7 +42,7 @@ async function runSwap(amount: number, side: 'BUY' | 'SELL') {
       side: side,
     };
 
-    const response = await axios.post(`${GATEWAY_URL}/connectors/dedust/router/swap`, payload);
+    const response = await axios.post(`${GATEWAY_URL}/connector/dedust/router/swap`, payload);
     console.log('Swap Success:', JSON.stringify(response.data, null, 2));
   } catch (error: any) {
     console.error('Swap Failed:', error.message);
