@@ -271,31 +271,34 @@ export class Ton {
       balances[this.nativeTokenSymbol] = 0;
     }
 
-    if (tokens && tokens.length > 0) {
-      const jettonPromises = tokens
-        .filter((symbolOrAddress) => symbolOrAddress !== this.nativeTokenSymbol && symbolOrAddress !== 'native')
-        .map(async (symbolOrAddress) => {
-          const token = this.tokenList.find((t) => t.symbol === symbolOrAddress || t.address === symbolOrAddress);
-          if (token && token.address !== 'native') {
-            try {
-              const jettonWalletAddress = await this.rpcProvider.getJettonWalletAddress(token.address, validatedAddress);
-              const jettonBalance = await this.rpcProvider.getJettonBalance(jettonWalletAddress);
-              return { symbol: token.symbol, balance: Number(jettonBalance) / Math.pow(10, token.decimals) };
-            } catch (error) {
-              logger.warn(`Failed to fetch jetton balance for ${token.symbol} (${token.address}): ${error}`);
-              return { symbol: token.symbol, balance: 0 };
-            }
-          }
-          return null;
-        });
+    // If no tokens specified, fetch balances for all known jettons from token list
+    const tokensToFetch = tokens && tokens.length > 0
+      ? tokens
+      : this.tokenList.map((t) => t.symbol);
 
-      const results = await Promise.all(jettonPromises);
-      results.forEach((result) => {
-        if (result) {
-          balances[result.symbol] = result.balance;
+    const jettonPromises = tokensToFetch
+      .filter((symbolOrAddress) => symbolOrAddress !== this.nativeTokenSymbol && symbolOrAddress !== 'native')
+      .map(async (symbolOrAddress) => {
+        const token = this.tokenList.find((t) => t.symbol === symbolOrAddress || t.address === symbolOrAddress);
+        if (token && token.address !== 'native') {
+          try {
+            const jettonWalletAddress = await this.rpcProvider.getJettonWalletAddress(token.address, validatedAddress);
+            const jettonBalance = await this.rpcProvider.getJettonBalance(jettonWalletAddress);
+            return { symbol: token.symbol, balance: Number(jettonBalance) / Math.pow(10, token.decimals) };
+          } catch (error) {
+            logger.warn(`Failed to fetch jetton balance for ${token.symbol} (${token.address}): ${error}`);
+            return { symbol: token.symbol, balance: 0 };
+          }
         }
+        return null;
       });
-    }
+
+    const results = await Promise.all(jettonPromises);
+    results.forEach((result) => {
+      if (result) {
+        balances[result.symbol] = result.balance;
+      }
+    });
 
     return balances;
   }
