@@ -260,8 +260,8 @@ const configureGatewayServer = () => {
 
     // Register DEX connector routes - organized by connector
 
-    app.register(dedustRoutes, { prefix: '/connector/dedust/router' });
-    app.register(dedustAmmRoutes, { prefix: '/connector/dedust/amm' });
+    app.register(dedustRoutes, { prefix: '/connectors/dedust/router' });
+    app.register(dedustAmmRoutes, { prefix: '/connectors/dedust/amm' });
 
     // Jupiter routes
     app.register(jupiterRoutes.router, {
