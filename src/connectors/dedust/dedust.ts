@@ -12,6 +12,8 @@ export class DeDust {
   private static _instances: { [name: string]: DeDust } = {};
   public chain: Ton;
   public config: DeDustConfig;
+  private readonly _retryMaxAttempts = 3;
+  private readonly _retryDelayMs = 500;
 
   private constructor(network: string) {
     this.chain = Ton.getInstance(network);
@@ -50,6 +52,38 @@ export class DeDust {
     throw new Error(`Token not found: ${symbolOrAddress}`);
   }
 
+  private _shouldRetry(error: any): boolean {
+    const status = error?.response?.status;
+    if (!status) {
+      return true;
+    }
+    if (status === 429) {
+      return true;
+    }
+    return status >= 500 && status < 600;
+  }
+
+  private async _requestWithRetry<T>(action: string, fn: () => Promise<T>): Promise<T> {
+    let lastError: any;
+    for (let attempt = 1; attempt <= this._retryMaxAttempts; attempt++) {
+      try {
+        return await fn();
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (!this._shouldRetry(error) || attempt >= this._retryMaxAttempts) {
+          break;
+        }
+        const delayMs = this._retryDelayMs * attempt;
+        logger.warn(
+          `DeDust ${action} attempt ${attempt}/${this._retryMaxAttempts} failed (${status ?? 'no-status'}). Retrying in ${delayMs}ms`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+    throw lastError;
+  }
+
   async getQuote(tokenIn: string, tokenOut: string, amountIn: number, _slippage?: number): Promise<any> {
     const src = this.getTokenAddress(tokenIn);
     const dst = this.getTokenAddress(tokenOut);
@@ -63,15 +97,17 @@ export class DeDust {
     const amountInBigInt = parseUnits(amountIn, decimalsIn);
 
     try {
-      const response = await axios.post(`${this.config.baseUrl}/router/quote`, {
-        in_minter: src,
-        out_minter: dst,
-        amount: amountInBigInt.toString(),
-        swap_mode: 'exact_in',
-        slippage_bps: Math.floor((_slippage || 0.5) * 100),
-        max_splits: 4,
-        max_length: 3,
-      });
+      const response = await this._requestWithRetry('quote', () =>
+        axios.post(`${this.config.baseUrl}/router/quote`, {
+          in_minter: src,
+          out_minter: dst,
+          amount: amountInBigInt.toString(),
+          swap_mode: 'exact_in',
+          slippage_bps: Math.floor((_slippage || 0.5) * 100),
+          max_splits: 4,
+          max_length: 3,
+        }),
+      );
 
       const responseData = response.data;
       const swapData = responseData.swap_data;
@@ -112,10 +148,12 @@ export class DeDust {
       }
     }
 
-    const response = await axios.post(`${this.config.baseUrl}/router/swap`, {
-      sender_address: walletAddress,
-      swap_data: swapData,
-    });
+    const response = await this._requestWithRetry('swap', () =>
+      axios.post(`${this.config.baseUrl}/router/swap`, {
+        sender_address: walletAddress,
+        swap_data: swapData,
+      }),
+    );
 
     const transactions = response.data.transactions;
 
